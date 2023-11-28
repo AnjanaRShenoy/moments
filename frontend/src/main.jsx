@@ -17,19 +17,24 @@ import LoginScreen from "./screens/user/LoginScreen.jsx";
 import RegisterScreen from "./screens/user/RegisterScreen.jsx";
 import HomeScreen from "./screens/user/HomeScreen.jsx";
 import ProfileScreen from "./screens/user/ProfileScreen.jsx";
+import CreateScreen from "./screens/user/CreateScreen.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
+
+
 import PrivateRouteAdmin from "./components/PrivateRouteAdmin.jsx";
 import LoginAdmin from "./screens/admin/LoginAdmin.jsx";
 import HomeAdmin from "./screens/admin/HomeAdmin.jsx";
 import AdminCreateUser from "./screens/admin/AdminCreateUser.jsx";
 import AdminEditUser from "./screens/admin/AdminCreateUser.jsx";
+
+
 import Hero from "./components/Hero.jsx";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-    
-    {/* user side routes */}
+      {/* user side routes */}
 
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
@@ -37,20 +42,19 @@ const router = createBrowserRouter(
         <Route index={true} path="/" element={<HomeScreen />} />
         <Route path="" element={<PrivateRoute />}>
           <Route path="/profile" element={<ProfileScreen />} />
+          <Route path="/create" element={<CreateScreen />} />
         </Route>
       </Route>
 
-    {/* Admin side routes */}
+      {/* Admin side routes */}
 
       <Route path="/admin/login" element={<LoginAdmin />} />
       <Route path="/" element={<App admin />}>
         <Route path="/admin/create-user" element={<AdminCreateUser />} />
         <Route path="/admin/edit-user/:user" element={<AdminEditUser />} />
         <Route path="" element={<PrivateRouteAdmin />}>
-          <Route path="/admin/" element={<HomeAdmin />} >
-            <Route path="/admin/test" element={<Hero/>}>
-
-            </Route>
+          <Route path="/admin/" element={<HomeAdmin />}>
+            <Route path="/admin/test" element={<Hero />}></Route>
           </Route>
         </Route>
       </Route>

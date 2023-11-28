@@ -5,7 +5,6 @@ import  Hero  from '../../components/Hero.jsx'
 const HomeScreen = () => {
   return (
     <div>
-      {/* <sidebar/> */}
       <Hero/>
     </div>
   )
