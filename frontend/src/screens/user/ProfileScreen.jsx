@@ -1,166 +1,146 @@
-import { useState, useEffect, useRef } from "react";
-import { Form, Button, Image, ButtonGroup } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import FormContainer from "../../components/FormContainer";
-import { toast } from "react-toastify";
-import Loader from "../../components/Loader";
 import {
-  useUpdateUserMutation,
-  useUpdateProfileImageMutation,
-} from "../../slices/userAdminApiSlice";
-import { setCredentials } from "../../slices/authSlice";
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  useColorModeValue,
+  Avatar,
+  AvatarBadge,
+  IconButton,
+  Center,
+} from "@chakra-ui/react";
+import { SmallCloseIcon } from "@chakra-ui/icons";
+import { useProfileQuery } from "../../slices/userApiSlice";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 
-const ProfileScreen = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [updatedProfileImage, setUpdatedProfileImage] = useState();
-
-  const dispatch = useDispatch();
-
+export default function UserProfileEdit() {
   const { userInfo } = useSelector((state) => state.auth);
 
-  const [updateProfile, { isLoading }] = useUpdateUserMutation();
-  // eslint-disable-next-line no-unused-vars
-  const [profileImageUpdate, { isUpdating }] = useUpdateProfileImageMutation();
+  const [data, setData] = useState([]);
 
-  const hiddenFileInput = useRef(null);
+  const { data: user, error, refetch } = useProfileQuery();
 
   useEffect(() => {
-    setName(userInfo.name);
-    setEmail(userInfo.email);
-    setUpdatedProfileImage(userInfo.profileImage)
-  }, [userInfo.email, userInfo.name, userInfo.profileImage]);
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-    } else if (!email.trim() || !name.trim()) {
-      toast.error("Empty field, please add a value");
-    } else {
+    const fetchData = async () => {
       try {
-        const res = await updateProfile({
-          _id: userInfo._id,
-          name,
-          email,
-          password,
-        }).unwrap();
-        dispatch(setCredentials(res));
-        toast.success("Profile updated successfully");
+        const response = await fetch(
+          `/api/user/profile?email=${userInfo.email}&username=${userInfo.username}`,
+          {
+            method: "GET",
+          }
+        );
+        if (!response.ok) {
+          console.error("Error fetching user profile:", response.statusText);
+        } else {
+          const userData = await response.json();
+          setData(userData);
+        }
       } catch (err) {
-        toast.error(err?.data?.message || err.error);
+        console.log(err);
       }
-    }
-  };
+    };
 
-
-  const handleClick = () => {
-    hiddenFileInput.current.click();
-  };
-
-  const handleChange = async () => {
-    const formData = new FormData();
-    formData.append("image", updatedProfileImage);
-    formData.append("id", userInfo._id);
-    const res = await profileImageUpdate(formData).unwrap();
-    setUpdatedProfileImage(res.profileImage)
-  };
-
-  useEffect(() => {
-    if (updatedProfileImage && updatedProfileImage != "default.png") {
-      handleChange();
-    }
-  }, [updatedProfileImage]);
+    fetchData();
+  }, [refetch, data]);
 
   return (
-    <FormContainer>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexDirection: "row",
-        }}
+    <Flex minH={"100vh"} align={"center"} justify={"center"}>
+      <Stack
+        spacing={4}
+        w={"full"}
+        maxW={"md"}
+        bg={useColorModeValue("white", "gray.700")}
+        rounded={"xl"}
+        boxShadow={"lg"}
+        p={6}
+        my={12}
       >
-        <h1>Update Profile</h1>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Image
-            src={`${updatedProfileImage}`}
-            roundedCircle
-            style={{ height: "100px", paddingBottom: "10px" }}
+        <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+          User Profile Edit
+        </Heading>
+        <FormControl id="userName">
+          <FormLabel>Profile Photo</FormLabel>
+          <Stack direction={["column", "row"]} spacing={6}>
+            <Center>
+              <Avatar size="xl" src="https://bit.ly/sage-adebayo">
+                <AvatarBadge
+                  as={IconButton}
+                  size="sm"
+                  rounded="full"
+                  top="-10px"
+                  colorScheme="red"
+                  aria-label="remove Image"
+                  icon={<SmallCloseIcon />}
+                />
+              </Avatar>
+            </Center>
+            <Center w="full">
+              <Button w="full">Edit Profile photo</Button>
+            </Center>
+          </Stack>
+        </FormControl>
+        <FormControl id="userName">
+          <FormLabel>User name</FormLabel>
+          <Input
+            placeholder="enter your name"
+            _placeholder={{ color: "gray.500" }}
+            type="text"
+            value={userInfo.name}
           />
-          <ButtonGroup aria-label="Basic example" size="sm">
-            <Button variant="secondary" onClick={handleClick}>
-              Update Profile Image
-            </Button>
-            <input
-              type="file"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                setUpdatedProfileImage(file);
-              }}
-              ref={hiddenFileInput}
-              style={{ display: "none" }}
-              name="image"
-            ></input>
-          </ButtonGroup>
-        </div>
-      </div>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="name"
-            placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
+        </FormControl>
+        <FormControl id="email">
+          <FormLabel>Email address</FormLabel>
+          <Input
+            placeholder="enter your email address"
+            _placeholder={{ color: "gray.500" }}
             type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
+            value={userInfo.email}
+          />
+        </FormControl>
+        <FormControl id="password">
+          <FormLabel>Phone number</FormLabel>
+          <Input
+            placeholder="Enter your phonenumber"
+            _placeholder={{ color: "gray.500" }}
+            type="phonenumber"
+          />
+        </FormControl>
+        <FormControl id="password">
+          <FormLabel>About you</FormLabel>
+          <Input
+            placeholder="Tell about yourself..."
+            _placeholder={{ color: "gray.500" }}
             type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+          />
+        </FormControl>
 
-        <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button type="submit" variant="primary" className="mt-3">
-          Save Changes
-        </Button>
-
-        {isLoading && <Loader />}
-      </Form>
-    </FormContainer>
+        <Stack spacing={6} direction={["column", "row"]}>
+          <Button
+            bg={"red.400"}
+            color={"white"}
+            w="full"
+            _hover={{
+              bg: "red.500",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            bg={"blue.400"}
+            color={"white"}
+            w="full"
+            _hover={{
+              bg: "blue.500",
+            }}
+          >
+            Submit
+          </Button>
+        </Stack>
+      </Stack>
+    </Flex>
   );
-};
-
-export default ProfileScreen;
+}

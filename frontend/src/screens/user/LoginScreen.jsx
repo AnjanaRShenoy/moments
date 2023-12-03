@@ -4,10 +4,10 @@ import { Form, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 // import FormContainer from "../components/FormContainer";
 import { Link } from "react-router-dom";
-import { useLoginMutation } from "../../slices/userAdminApiSlice";
+import { useLoginMutation } from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
-import Loader from "../../components/Loader";
+import Loader from "../../components/mutualComponents/Loader";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 

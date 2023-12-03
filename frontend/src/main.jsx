@@ -18,17 +18,17 @@ import RegisterScreen from "./screens/user/RegisterScreen.jsx";
 import HomeScreen from "./screens/user/HomeScreen.jsx";
 import ProfileScreen from "./screens/user/ProfileScreen.jsx";
 import CreateScreen from "./screens/user/CreateScreen.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
+import PrivateRoute from "./components/userComponents/PrivateRoute.jsx";
 
 
-import PrivateRouteAdmin from "./components/PrivateRouteAdmin.jsx";
+import PrivateRouteAdmin from "./components/adminComponents/PrivateRouteAdmin.jsx";
 import LoginAdmin from "./screens/admin/LoginAdmin.jsx";
 import HomeAdmin from "./screens/admin/HomeAdmin.jsx";
 import AdminCreateUser from "./screens/admin/AdminCreateUser.jsx";
 import AdminEditUser from "./screens/admin/AdminCreateUser.jsx";
 
 
-import Hero from "./components/Hero.jsx";
+import Hero from "./components/userComponents/Hero.jsx";
 
 
 const router = createBrowserRouter(

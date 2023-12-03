@@ -8,7 +8,7 @@ const port= process.env.PORT || 5000
 // import userRoutes from './userRoutes.js'
 import router from "./routes/userRoutes.js";
 import adminRoute from "./routes/adminRoutes.js"
-
+// import fileUpload from "express-fileupload";
 // import morgan from "morgan";
 
 connectDB()

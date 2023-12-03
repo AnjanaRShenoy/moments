@@ -3,10 +3,14 @@ import {
   authUser,
   registerUser,
   logoutUser,
-  getUserProfile,
-  updateUserProfile,
+  // getUserProfile,
+  // updateUserProfile,
   updateUserImage,
-  checkOtp
+  checkOtp,
+  createPost,
+  listPost,
+  comment,
+  profile,
 } from "../controllers/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { upload } from "../config/multer.js";
@@ -21,8 +25,16 @@ router.post("/auth", authUser);
 
 router.post("/logout", logoutUser);
 
-router.route("/profile") .get(protect, getUserProfile)  .put(protect, updateUserProfile);
+router.post("/post", upload.single("filed"), createPost)
 
-router.put(  "/profile-updateImage",  upload.single("image"),  protect,  updateUserImage);
+router.get("/listPost", listPost)
+
+router.post("/comment", comment)
+
+router.get("/profile", profile)
+
+// router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
+
+router.put("/profile-updateImage", upload.single("image"), protect, updateUserImage);
 
 export default router;

@@ -36,18 +36,6 @@ const otpSchema = mongoose.Schema(
 
 otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 0 });      //TTL
 
-otpSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-otpSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
 const Otp = mongoose.model("Otp", otpSchema);
 
 export default Otp;

@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 // import FormContainer from "../../components/FormContainer";
-import { useAdminLoginMutation } from "../../slices/userAdminApiSlice";
+import { useAdminLoginMutation } from "../../slices/adminApiSlice";
 import { setAdminCredentials } from "../../slices/adminAuthSlice";
 import { toast } from "react-toastify";
-import Loader from "../../components/Loader";
+import Loader from "../../components/mutualComponents/Loader";
 
 import {
   Flex,

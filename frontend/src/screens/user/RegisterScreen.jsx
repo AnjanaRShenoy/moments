@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 // import FormContainer from "../components/FormContainer";
-import Loader from "../../components/Loader";
+import Loader from "../../components/mutualComponents/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useRegisterMutation,
   useOtpMutation,
-} from "../../slices/userAdminApiSlice";
+} from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
@@ -64,9 +64,7 @@ const RegisterScreen = () => {
           email,
           phoneNumber,
           password,
-        }).unwrap();
-      
-        dispatch(setCredentials({ ...res })); //to send the response to the store for local storage
+        }).unwrap(); 
         setOtppage(true);                     //to bring the otp page
       } catch (err) {
         toast.error(err?.data?.message || err.error);
@@ -87,7 +85,7 @@ const RegisterScreen = () => {
         }).unwrap();
         
         dispatch(setCredentials({ ...res }));
-        navigate("/");
+        navigate("/login");
       } 
      catch (err) {
       toast.error(err?.data?.message || err.error);

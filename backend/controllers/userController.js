@@ -3,8 +3,11 @@ import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
 import Otp from "../models/otpModel.js";
 import nodemailer from 'nodemailer';
-
+import Post from "../models/postModel.js";
+import Comment from "../models/commentModel.js";
 import { APP_PASSWORD, ADMIN_EMAIL } from "../config/connections.js";
+
+
 
 // to login the user
 const authUser = asyncHandler(async (req, res) => {
@@ -43,7 +46,7 @@ const authUser = asyncHandler(async (req, res) => {
 // to send the verification otp to mail
 const sendVerifyMail = async (name, email, otp) => {
   try {
-    const transporter = nodemailer.createTransport({                  
+    const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
@@ -58,13 +61,13 @@ const sendVerifyMail = async (name, email, otp) => {
       from: ADMIN_EMAIL,
       to: email,
       subject: "OTP for verification mail",
-      
+
       html: `<p> hi ${name},Use this otp ${otp} to login</p>`,
       text: `hi ${name},Use this otp ${otp} to login`,
     }
 
     await transporter.sendMail(mailOptions)
-    
+
     // res.status(200).json({message:"Email sent for verification"})
 
 
@@ -82,7 +85,7 @@ const sendVerifyMail = async (name, email, otp) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, phoneNumber, password, gmail } = req.body;
 
-// to register through google mail directly
+  // to register through google mail directly
   if (gmail) {
     console.log(email);
     const userExist = await User.findOne({ email: email });
@@ -137,22 +140,22 @@ const registerUser = asyncHandler(async (req, res) => {
 // to check the otp
 const checkOtp = asyncHandler(async (req, res) => {
   try {
-    const otpUser = await Otp.findOne({ email:req.body.email });
+    const otpUser = await Otp.findOne({ email: req.body.email });
     console.log(otpUser.otp, req.body.otp);
-      if(otpUser.otp==req.body.otp){
-        console.log("entered");
-        const user = await User.create({                       //saving the user data in otp collection
-          name:req.body.name,
-          email:req.body.email,
-          phoneNumber:req.body.phoneNumber,
-          password:req.body.password
-        });
-        console.log(user,"user");
-        res.status(201).json({
-          user
-        });
-      }
-  }catch(error){
+    if (otpUser.otp == req.body.otp) {
+      console.log("entered");
+      const user = await User.create({                       //saving the user data in otp collection
+        name: req.body.name,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        password: req.body.password
+      });
+      console.log(user, "user");
+      res.status(201).json({
+        user
+      });
+    }
+  } catch (error) {
     console.log(error);
   }
 })
@@ -166,35 +169,37 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User Logged Out" });
 });
 
+
+
 // to get the user profile for showing profile
-const getUserProfile = asyncHandler(async (req, res) => {
-  const user = {
-    _id: req.user._id,
-    name: req.user.name,
-    email: req.user.email,
+// const getUserProfile = asyncHandler(async (req, res) => {
+//   const user = {
+//     _id: req.user._id,
+//     name: req.user.name,
+//     email: req.user.email,
 
-  };
-  res.status(200).json(user);
-});
+//   };
+//   res.status(200).json(user);
+// });
 
-// to make changes in profile
-const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    if (req.body.password) user.password = req.body.password;
-    const updatedUser = await user.save();
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-    });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
-  }
-});
+// // to make changes in profile
+// const updateUserProfile = asyncHandler(async (req, res) => {
+//   const user = await User.findById(req.user._id);
+//   if (user) {
+//     user.name = req.body.name || user.name;
+//     user.email = req.body.email || user.email;
+//     if (req.body.password) user.password = req.body.password;
+//     const updatedUser = await user.save();
+//     res.status(200).json({
+//       _id: updatedUser._id,
+//       name: updatedUser.name,
+//       email: updatedUser.email,
+//     });
+//   } else {
+//     res.status(404);
+//     throw new Error("User not found");
+//   }
+// });
 
 // to change profile picture
 const updateUserImage = asyncHandler(async (req, res) => {
@@ -213,12 +218,75 @@ const updateUserImage = asyncHandler(async (req, res) => {
   }
 });
 
+// to save the created post in database
+const createPost = asyncHandler(async (req, res) => {
+  try {
+
+    const userInfo = JSON.parse(req.body.userInfo)
+    const userId = userInfo._id;
+    if (req.file) {
+      const post = await Post.create({
+        userId: userId,
+        post: req.file.filename
+      })
+        .catch(err => {
+          console.log(err.message);
+        })
+      res.status(200).json({ post: req.file.filename })
+    }
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+// to show all the posts in home page
+const listPost = asyncHandler(async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("userId")                     //to retrieve the user name and details 
+
+    // const comments = await Comment.find()     //to retrieve the user and post details 
+    //   .populate("userId", "postId")
+
+    res.status(200).json(posts)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const comment = asyncHandler(async (req, res) => {
+  try {
+    console.log('entered');
+    const userInfo = req.body.userInfo
+    const userId = userInfo._id
+    const comment = await Comment.create({
+      userId: userId,
+      comment: req.body.comment,
+      postId: req.body.postId
+    })
+    res.status(200).json(comment)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+// to get the user profile for showing profile details
+const profile = asyncHandler(async (req, res) => {
+  console.log("jjjj",userInfo);
+  const email = req.body.email
+  const user = await User.findOne({ email: email })
+})
+
 export {
   authUser,
   registerUser,
   logoutUser,
-  getUserProfile,
-  updateUserProfile,
+  // getUserProfile,
+  // updateUserProfile,
   updateUserImage,
-  checkOtp
+  checkOtp,
+  createPost,
+  listPost,
+  comment,
+  profile,
 };

@@ -12,7 +12,8 @@ import {
   useSearchUsersMutation,
   useDeleteUserMutation,
   useAdminLogoutMutation,
-} from "../../slices/userAdminApiSlice";
+} from "../../slices/adminApiSlice";;
+
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";

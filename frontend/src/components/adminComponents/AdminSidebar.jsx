@@ -1,54 +1,52 @@
 import React from "react";
 import {
   IconButton,
+  Avatar,
   Box,
   CloseButton,
   Flex,
+  HStack,
+  VStack,
   Icon,
   useColorModeValue,
   Text,
   Drawer,
   DrawerContent,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-  FiMenu,
-} from "react-icons/fi";
-import { MdOutlineLibraryAdd } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
-import { CgProfile } from "react-icons/cg";
-import { IoIosSave } from "react-icons/io";
-import { GiShadowFollower } from "react-icons/gi";
-import { TiMessages } from "react-icons/ti";
-import { IoIosNotificationsOutline } from "react-icons/io";
-import { Button } from "react-bootstrap";
-import { useLogoutMutation } from "../slices/userAdminApiSlice";
+import { FiSettings, FiMenu, FiChevronDown } from "react-icons/fi";
+import { FaUsers } from "react-icons/fa";
+import { SiSocialblade } from "react-icons/si";
+import { CiSignpostDuo1 } from "react-icons/ci";
 import { useDispatch } from "react-redux";
-import { logout } from "../slices/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useAdminLogoutMutation } from "../../slices/adminApiSlice";
+import { adminLogout } from "../../slices/adminAuthSlice";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { FaRegComment } from "react-icons/fa";
+import { IoMdLogOut } from "react-icons/io";
+// import {} from "../../public/images"
 
 const LinkItems = [
-  { name: "Home", icon: FiHome },
-  { name: "Profile", icon: CgProfile },
-  { name: "Create", icon: MdOutlineLibraryAdd, url: "/create" },
-  { name: "Saved post", icon: IoIosSave },
-  { name: "Followers", icon: GiShadowFollower },
-  { name: "Followings", icon: GiShadowFollower },
-  { name: "Messages", icon: TiMessages },
-  { name: "Notifications", icon: IoIosNotificationsOutline },
-  { name: "Settings", icon: FiSettings },
+  { name: "Dashboard", icon: SiSocialblade, url: "/admin/" },
+  { name: "User Management", icon: FaUsers, url: "/admin/" },
+  { name: "Post management", icon: CiSignpostDuo1, url: "/admin/" },
+  { name: "Comment Management", icon: FaRegComment, url: "/admin/" },
+  { name: "Settings", icon: FiSettings, url: "/admin/" },
 ];
 
-export default function Header() {
+export default function AdminSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const logoutHandler = () => {};
 
   return (
-    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+    <Box bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarContent
         onClose={() => onClose()}
         display={{ base: "none", md: "block" }}
@@ -67,9 +65,6 @@ export default function Header() {
       </Drawer>
       {/* mobilenav */}
       <MobileNav display={{ base: "flex", md: "none" }} onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
-        {/* Content */}
-      </Box>
     </Box>
   );
 }
@@ -77,12 +72,12 @@ export default function Header() {
 const SidebarContent = ({ onClose, ...rest }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [logoutApiCall] = useLogoutMutation();
+  const [logoutApiCall] = useAdminLogoutMutation();
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
-      dispatch(logout());
-      navigate("/login");
+      dispatch(adminLogout());
+      navigate("/admin/login");
     } catch (err) {
       console.log(err);
     }
@@ -99,9 +94,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <img
-          src="../..public/images/momentsLogo.jpeg"
+          src="../../../images/Moments.png"
           alt=""
-          style={{ backgroundColor: "black" }}
+          style={{ backgroundColor: "black", height: "70px" }}
         />
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
@@ -109,11 +104,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <NavItem
           key={link.name}
           onClick={() => {
-            if (link.url === "/create") {
-              openCreateUserModal();
-            } else {
-              navigate(link.url);
-            }
+            navigate(link.url);
           }}
           icon={link.icon}
         >
@@ -123,7 +114,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </NavItem>
       ))}
       <Box>
-        <NavItem onClick={logoutHandler}>
+        <NavItem onClick={logoutHandler} icon="IoMdLogOut">
           <Link as={Link} to="/logout">
             Logout
           </Link>
@@ -180,7 +171,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent="flex-start"
+      justifyContent="flex-center"
       {...rest}
     >
       <IconButton
@@ -190,9 +181,11 @@ const MobileNav = ({ onOpen, ...rest }) => {
         icon={<FiMenu />}
       />
 
-      <Text fontSize="2xl" ml="8" fontFamily="monospace" fontWeight="bold">
-        Logo
-      </Text>
+      <img
+        src="../../../images/Moments.png"
+        alt=""
+        style={{ height: "70px" }}
+      />
     </Flex>
   );
 };
