@@ -24,6 +24,7 @@ import {
   Text,
   useColorModeValue,
   Center,
+  useToast,
 } from "@chakra-ui/react";
 
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -38,6 +39,7 @@ const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const toast = useToast();
 
   useEffect(() => {
     if (userInfo) {
@@ -53,10 +55,21 @@ const LoginScreen = () => {
         dispatch(setCredentials({ ...res }));
         navigate("/");
       } else {
-        toast.error("Please Enter email and password");
+        
+        toast({
+          title: "Please enter email and password",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      toast({
+        title: err?.data?.message || err.error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -157,7 +170,7 @@ const LoginScreen = () => {
               {/* <div style={{ borderTop: "2px solid #000", width: "100%" }}></div> */}
               <Stack pt={6}>
                 <Text align={"center"}>
-                  Not a User? 
+                  Not a User?
                   <Link to="/register" cursor={"pointer"} color={"red.400"}>
                     Sign up
                   </Link>

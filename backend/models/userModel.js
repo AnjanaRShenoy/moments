@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+
 const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
-    phoneNumber:{
+    phoneNumber: {
       type: String,
-      unique:true
+      unique: true
     },
     email: {
       type: String,
@@ -18,23 +19,31 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
+      required: true,
     },
     profileImage: {
       type: String,
-      default: "defaultProfilePic.jpg"      
+      default: "defaultProfilePic.jpg"
     },
     isAdmin: {
       type: Boolean,
       default: false,
     },
-    bio:{
-      type:String
+    bio: {
+      type: String,
+      required:true,
+      default:" "
     },
-    isActive:{ 
-      type:Boolean,
-      default:true,
-      required:true
-    }
+    isActive: {
+      type: Boolean,
+      default: true,
+      required: true
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
   },
   {
     timestamps: true,

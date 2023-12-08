@@ -1,9 +1,7 @@
 import { ADMIN_URL, USERS_URL } from "../constants/constants";
 import { apiSlice } from "./apiSlice";
 export const userAdminApiSlice = apiSlice.injectEndpoints({
-    endpoints: (builder) => ({
-       
-
+    endpoints: (builder) => ({       
         adminLogin: builder.mutation({
             query: (data) => ({
                 url: `${ADMIN_URL}/auth`,
@@ -12,9 +10,9 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-        listUsers: builder.mutation({
+        listUsers: builder.query({
             query: (data) => ({
-                url: `${ADMIN_URL}/list-users`,
+                url: `${ADMIN_URL}/listUsers`,
                 method: "GET",
                 body: data,
             }),
@@ -28,9 +26,9 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-        deleteUser: builder.mutation({
+        blockUser: builder.mutation({
             query: (data) => ({
-                url: `${ADMIN_URL}/delete-user`,
+                url: `${ADMIN_URL}/blockUser`,
                 method: "POST",
                 body: data,
             }),
@@ -58,15 +56,33 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
             }),
         }),
+
+        postDelete: builder.mutation({
+            query:(data)=>({
+                url:`${ADMIN_URL}/deletePost`,
+                method:"POST",
+                body:data,
+            }),
+        }),
+
+        getPost:builder.query({
+            query:(data)=>({
+                url:`${ADMIN_URL}/getPost`,
+                method:"GET",
+                body:data
+            })
+        })
     })
 })
 export const {
 
   useAdminLoginMutation,
   useAdminLogoutMutation,
-  useListUsersMutation,
+  useListUsersQuery,
   useSearchUsersMutation,
-  useDeleteUserMutation,
+  useBlockUserMutation,
   useEditUserMutation,
-  useGetUserMutation
+  useGetUserMutation,
+  usePostDeleteMutation,
+  useGetPostQuery,
 } = userAdminApiSlice;

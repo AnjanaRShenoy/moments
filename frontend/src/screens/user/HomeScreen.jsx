@@ -5,7 +5,7 @@ import  Hero  from '../../components/userComponents/Hero.jsx'
 const HomeScreen = () => {
   return (
     
-    <div>
+    <div >
       <Hero/>
     </div>
    

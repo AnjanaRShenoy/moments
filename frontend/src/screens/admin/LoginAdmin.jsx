@@ -18,7 +18,6 @@ import {
   Stack,
   Button,
   Heading,
-  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 
@@ -35,7 +34,6 @@ const LoginAdmin = () => {
 
   const { adminInfo } = useSelector((state) => state.adminAuth);
 
-  
   useEffect(() => {
     if (adminInfo) {
       navigate("/admin/");
@@ -56,111 +54,79 @@ const LoginAdmin = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
-  
+
   return (
-    // <FormContainer>
-    //   <h1>Admin Login</h1>
-    //   <Form onSubmit={submitHandler}>
-    //     <Form.Group className="my-2" controlId="email">
-    //       <Form.Label>Email Address</Form.Label>
-    //       <Form.Control
-    //         type="email"
-    //         placeholder="Enter email"
-    //         value={email}
-    //         onChange={(e) => setEmail(e.target.value)}
-    //       ></Form.Control>
-    //     </Form.Group>
-    //     <Form.Group className="my-2" controlId="password">
-    //       <Form.Label>Password</Form.Label>
-    //       <Form.Control
-    //         type="password"
-    //         placeholder="Enter Password"
-    //         value={password}
-    //         onChange={(e) => setPassword(e.target.value)}
-    //       ></Form.Control>
-    //     </Form.Group>
-
-    //     {isLoading && <Loader />}
-
-    //     <Button type="submit" variant="primary" className="mt-3">
-    //       Login
-    //     </Button>
-    //   </Form>
-    // </FormContainer>
     <Flex
-    minH={"100vh"}
-    align={"center"}
-    justify={"center"}
-    style={{
-      backgroundImage:
-        'linear-gradient(rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.4)), url("https://c4.wallpaperflare.com/wallpaper/646/235/690/icons-social-media-social-media-wallpaper-preview.jpg")',
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-    }}
-  >
-    <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-      <Stack align={"center"}>
-        <Heading fontSize={"4xl"} textAlign={"center"}>
-          Admin Login
-        </Heading>
-      </Stack>
-      <Box
-        rounded={"lg"}
-        bg={useColorModeValue("white", "gray.700")}
-        boxShadow={"lg"}
-        p={8}
-      >
-        <Form onSubmit={submitHandler}>
-          <Stack spacing={4}>
-            <FormControl id="email">
-              <FormLabel>Email address</FormLabel>
-              <Input
-                type="email"
-                placeholder="Enter email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </FormControl>
-            <FormControl id="password">
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
+      minH={"100vh"}
+      align={"center"}
+      justify={"center"}
+      style={{
+        backgroundImage:
+          'linear-gradient(rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.4)), url("https://c4.wallpaperflare.com/wallpaper/646/235/690/icons-social-media-social-media-wallpaper-preview.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"} textAlign={"center"}>
+            Admin Login
+          </Heading>
+        </Stack>
+        <Box
+          rounded={"lg"}
+          bg={useColorModeValue("white", "gray.700")}
+          boxShadow={"lg"}
+          p={8}
+        >
+          <Form onSubmit={submitHandler}>
+            <Stack spacing={4}>
+              <FormControl id="email">
+                <FormLabel>Email address</FormLabel>
                 <Input
-                  type={password ? "text" : "password"}
-                  placeholder="Enter password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="email"
+                  placeholder="Enter email"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
+              </FormControl>
+              <FormControl id="password">
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={password ? "text" : "password"}
+                    placeholder="Enter password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
 
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => setPassword((Password) => !Password)}
+                  >
+                    {password ? <ViewIcon /> : <ViewOffIcon />}
+                  </Button>
+                </InputGroup>
+              </FormControl>
+              <Stack spacing={10} pt={2}>
+                {isLoading && <Loader />}
                 <Button
-                  variant={"ghost"}
-                  onClick={() => setPassword((Password) => !Password)}
+                  type="submit"
+                  loadingText="Submitting"
+                  size="lg"
+                  bg={"blue.400"}
+                  color={"white"}
+                  _hover={{
+                    bg: "blue.500",
+                  }}
                 >
-                  {password ? <ViewIcon /> : <ViewOffIcon />}
+                  Login
                 </Button>
-              </InputGroup>
-            </FormControl>
-            <Stack spacing={10} pt={2}>
-              {isLoading && <Loader />}
-              <Button
-                type="submit"
-                loadingText="Submitting"
-                size="lg"
-                bg={"blue.400"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.500",
-                }}
-              >
-                Login
-              </Button>
+              </Stack>
             </Stack>
-           
-            
-           
-          </Stack>
-        </Form>
-      </Box>
-    </Stack>
-  </Flex>
+          </Form>
+        </Box>
+      </Stack>
+    </Flex>
   );
 };
 

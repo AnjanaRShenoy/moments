@@ -52,27 +52,27 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
     }),
 
     // to post the comments in homepage
-    comment:builder.mutation({
-      query: (data)=>({
-        url:`${USERS_URL}/comment`,
-        method:"POST",
-        body:data
+    comment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/comment`,
+        method: "POST",
+        body: data
       })
     }),
 
-     // to get the user details from backend
-     profile: builder.query({
-      query: (data) => ({
-        url: `${USERS_URL}/profile`,
+    // to get the user details from backend
+    profile: builder.query({
+      query: ({_id}) => ({
+        url: `${USERS_URL}/profile?_id=${_id}`,
         method: "GET",
-        body: data
+        
       })
     }),
 
 
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
+        url: `${USERS_URL}/updateProfile`,
         method: "PUT",
         body: data,
       }),
@@ -86,8 +86,43 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    // to save the post and send to db
+    savePost: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/savePost`,
+        method: "POST",
+        body: data,
+      }),
+    }),
 
+    // to retrieve the saved post from database
+    getSavedPost: builder.query({
+      query:({_id})=>({
+        url:`${USERS_URL}/savedPost?_id=${_id}`,
+        method:"GET",
+        
+      })
+    }),
 
+    // to like the post and send to db
+    likePost:builder.mutation({
+      query:(data)=>({
+        url:`${USERS_URL}/likePost`,
+        method:"POST",
+        body:data
+      }),
+    }),
+
+    // to post the report
+    reportPost: builder.mutation({
+      query:(data)=>({
+        url:`${USERS_URL}/reportPost`,
+        method:"POST",
+        body:data
+      })
+    })
+
+    
   }),
 });
 
@@ -102,5 +137,8 @@ export const {
   useProfileQuery,
   useUpdateUserMutation,
   useUpdateProfileImageMutation,
-
+  useSavePostMutation,
+  useGetSavedPostQuery,
+  useLikePostMutation,
+  useReportPostMutation
 } = userAdminApiSlice;

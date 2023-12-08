@@ -1,19 +1,31 @@
 import express from "express";
-import { authAdmin, adminListUsers, adminSearchUsers, adminDeleteUser, adminEditUser,adminGetUser } from "../controllers/adminController.js";
+import {
+    authAdmin,
+    listUsers,
+    searchUsers,
+    blockUser,
+    editUser,
+    getUser,
+    deletePost,
+    getPost,
+} from "../controllers/adminController.js";
 const router = express.Router();
+import { adminAuth } from "../middleware/adminAuthMiddleware.js";
 
 router.post("/auth", authAdmin);
 
-router.get("/list-users", adminListUsers);
+router.get("/listUsers",adminAuth, listUsers);
 
-router.post("/search-users", adminSearchUsers);
+router.post("/search-users",adminAuth, searchUsers);
 
-router.post("/get-user", adminGetUser);
+router.post("/get-user",adminAuth, getUser);
 
-router.post("/delete-user", adminDeleteUser);
+router.post("/blockUser",adminAuth, blockUser);
 
-router.post("/edit-user", adminEditUser);
+router.post("/edit-user",adminAuth, editUser);
 
+router.post("/deletePost",adminAuth, deletePost)
 
+router.get("/getPost",adminAuth, getPost)
 
 export default router;
