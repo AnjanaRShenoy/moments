@@ -4,10 +4,7 @@ import { Form } from "react-bootstrap";
 import Loader from "../../components/mutualComponents/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useRegisterMutation,
-  useOtpMutation,
-} from "../../slices/userApiSlice";
+import { useRegisterMutation, useOtpMutation } from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
@@ -24,6 +21,7 @@ import {
   Heading,
   Text,
   useColorModeValue,
+useToast
 } from "@chakra-ui/react";
 
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -38,17 +36,23 @@ const RegisterScreen = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const Toast = useToast();
 
   const [register, { isLoading }] = useRegisterMutation();
   const [Otp, { isRounding }] = useOtpMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const submitHandler = async (e) => {    //to submit the signup form, validate and send to back end
+  const submitHandler = async (e) => {
+    //to submit the signup form, validate and send to back end
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      Toast({
+        title: "Passwords do not match",
+        status: "error",
+        isClosable: true,
+      });
     } else if (
       !name.trim() ||
       !email.trim() ||
@@ -56,41 +60,63 @@ const RegisterScreen = () => {
       !password.trim() ||
       !confirmPassword.trim()
     ) {
-      toast.error("Empty fields, please enter a value");
+      Toast({
+        title: "Empty fields, please enter value",
+        status: "error",
+        isClosable: true,
+      });
     } else {
       try {
-        const res = await register({           //response brought from backend
+        const res = await register({
+          //response brought from backend
           name,
           email,
           phoneNumber,
           password,
-        }).unwrap(); 
-        setOtppage(true);                     //to bring the otp page
+        }).unwrap();
+        setOtppage(true); //to bring the otp page
       } catch (err) {
-        toast.error(err?.data?.message || err.error);
+        Toast({
+          title: err?.data?.message || err.error,
+          status: "error",
+          isClosable: true,
+        });
       }
+    }
+  };
+  const resendOtp = async (e) => {
+    try {
+      const res = await register({
+        name,
+        email,
+        phoneNumber,
+        password,
+      }).unwrap();
+      
+    } catch {
+      toast({
+          title: err?.data?.message || err.error,
+          status: "error",
+          isClosable: true,
+        });
     }
   };
 
   const submitOtpHandler = async (e) => {
     e.preventDefault();
-    try {      
-      
-        const res = await Otp({ 
-          name,
-          phoneNumber,
-          password,
-          email,
-          otp
-        }).unwrap();
-        
-        dispatch(setCredentials({ ...res }));
-        navigate("/login");
-      } 
-     catch (err) {
+    try {
+      const res = await Otp({
+        name,
+        phoneNumber,
+        password,
+        email,
+        otp,
+      }).unwrap();
+      navigate("/login");
+    } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
-  }; 
+  };
 
   const googleHandler = async (decoded) => {
     const email = decoded.email;
@@ -163,6 +189,7 @@ const RegisterScreen = () => {
                       type={password ? "text" : "password"}
                       placeholder="Enter password"
                       onChange={(e) => setPassword(e.target.value)}
+                      onkeyup="validatePassword"
                     />
 
                     <Button
@@ -274,6 +301,13 @@ const RegisterScreen = () => {
                   >
                     Submit
                   </Button>
+                  <Link
+                    onClick={resendOtp}
+                    cursor={"cursor"}
+                    color={"blue.400"}
+                  >
+                    Resend Otp
+                  </Link>
                 </Stack>
               </Stack>
             </Form>

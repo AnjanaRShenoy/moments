@@ -26,16 +26,17 @@ import { IoIosSave } from "react-icons/io";
 import { GiShadowFollower } from "react-icons/gi";
 import { TiMessages } from "react-icons/ti";
 import { IoIosNotificationsOutline } from "react-icons/io";
+import { RiLogoutCircleRLine } from "react-icons/ri";
 import { Button } from "react-bootstrap";
 import { useLogoutMutation } from "../../slices/userApiSlice";
 import { useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
 
 const LinkItems = [
-  { name: "Home", icon: FiHome, url:"/" },
-  { name: "Profile", icon: CgProfile, url:"/profile" },
+  { name: "Home", icon: FiHome, url: "/" },
+  { name: "Profile", icon: CgProfile, url: "/profile" },
   { name: "Create", icon: MdOutlineLibraryAdd, url: "/create" },
-  { name: "Saved post", icon: IoIosSave },
+  { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
   { name: "Followers", icon: GiShadowFollower },
   { name: "Followings", icon: GiShadowFollower },
   { name: "Messages", icon: TiMessages },
@@ -47,7 +48,7 @@ export default function UserSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box bg={useColorModeValue("gray.100", "gray.900")} >
+    <Box bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarContent
         onClose={() => onClose()}
         display={{ base: "none", md: "block" }}
@@ -104,13 +105,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
       {LinkItems.map((link) => (
         <NavItem
           key={link.name}
-          onClick={() => {
-            if (link.url === "/create") {
-              openCreateUserModal();
-            } else {
-              navigate(link.url);
-            }
-          }}
+          
           icon={link.icon}
         >
           <Link as={Link} to={link.url}>
@@ -119,7 +114,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </NavItem>
       ))}
       <Box>
-        <NavItem onClick={logoutHandler}>
+        <NavItem icon={RiLogoutCircleRLine} onClick={logoutHandler}>
           <Link as={Link} to="/logout">
             Logout
           </Link>

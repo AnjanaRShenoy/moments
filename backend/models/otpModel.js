@@ -7,26 +7,23 @@ const otpSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    phoneNumber:{
+    phoneNumber: {
       type: String,
-      // unique:true
     },
     email: {
       type: String,
       required: true,
-      // unique: true,
+
     },
     password: {
       type: String,
     },
-    otp:{
-        type:Number,
-        required:true
+    otp: {
+      type: Number,
+      required: true
     },
     createdAt: {
       type: Date,
-      expires: 6, 
-      default: Date.now,
     }
   },
   {

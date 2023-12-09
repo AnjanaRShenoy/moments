@@ -2,23 +2,18 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 
-const auth = asyncHandler(async (req, res, next) => {
+const adminAuth = asyncHandler(async (req, res, next) => {
   let token;
 
   token = req.cookies.jwt;
-  console.log(token, 'token')
+  console.log(token, 'tokenAdmin')
 
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findById(decoded.userId).select("-password");
+      req.user = await User.findById(decoded.userId).select("-password");     
       
-      if (req.user.isBlocked) {
-        
-        return res.redirect("/auth")
-      }
-
       next();
     } catch (error) {
       res.status(401);
@@ -30,4 +25,4 @@ const auth = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { auth };
+export { adminAuth };

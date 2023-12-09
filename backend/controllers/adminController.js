@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
+import Post from "../models/postModel.js";
 
 //admin to login
 const authAdmin = asyncHandler(async (req, res) => {
@@ -24,16 +25,18 @@ const authAdmin = asyncHandler(async (req, res) => {
   }
 });
 
-const adminListUsers = asyncHandler(async (req, res) => {
+const listUsers = asyncHandler(async (req, res) => {
   try {
+
     const users = await User.find({ isAdmin: false });
-    res.status(201).json({ users });
+
+    res.status(201).json(users);
   } catch (error) {
     console.log(error.message);
   }
 });
 
-const adminSearchUsers = asyncHandler(async (req, res) => {
+const searchUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find({
       name: { $regex: req.body.search, $options: "i" },
@@ -45,12 +48,21 @@ const adminSearchUsers = asyncHandler(async (req, res) => {
   }
 });
 
-const adminDeleteUser = asyncHandler(async (req, res) => {
+const blockUser = asyncHandler(async (req, res) => {
   try {
-    await User.deleteOne({ _id: req.body.userId });
-    res
-      .status(200)
-      .json({ message: "User Profile Deleted Successfully", task: true });
+
+    const userId = req.body.userId
+    const status = req.body.status
+    if (status === "block") {
+      const active = await User.findByIdAndUpdate(
+        userId,
+        { isBlocked: true })
+    } else {
+      const active = await User.findByIdAndUpdate(
+        userId,
+        { isBlocked: false })
+    }
+    res.status(200).json({ message: `${userId.name} has been blocked` })
   } catch (error) {
     console.log(error.message);
     res
@@ -59,7 +71,7 @@ const adminDeleteUser = asyncHandler(async (req, res) => {
   }
 });
 
-const adminEditUser = asyncHandler(async (req, res) => {
+const editUser = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.body._id);
     if (user) {
@@ -81,7 +93,7 @@ const adminEditUser = asyncHandler(async (req, res) => {
   }
 });
 
-const adminGetUser = asyncHandler(async (req, res) => {
+const getUser = asyncHandler(async (req, res) => {
   try {
     const user = await User.find({ _id: req.body.user })
     res.status(200).json({ user })
@@ -90,15 +102,55 @@ const adminGetUser = asyncHandler(async (req, res) => {
   }
 })
 
+const getPost = asyncHandler(async (req, res) => {
+  try {
+
+    const post = await Post.aggregate([
+      {
+        $match: {
+          report: { $exists: true },
+          $expr: { $gte: [{ $size: "$report" }, 5] }
+        }
+      },{
+        $lookup:{
+          from:"users",
+          localField:"userId",
+          foreignField:'_id',
+          as:"userData"
+        }
+      }
+
+    ])
+  
+
+    res.status(200).json({post})
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const deletePost = asyncHandler(async (req, res) => {
+  try {
+
+    await Post.findByIdAndDelete({ _id: req.body.postId });
+    res
+      .status(200)
+      .json({ message: "User Profile Deleted Successfully", task: true });
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 
 
 export {
   authAdmin,
-  adminListUsers,
-  adminSearchUsers,
-  adminDeleteUser,
-  adminEditUser,
-  adminGetUser,
-
+  listUsers,
+  searchUsers,
+  blockUser,
+  editUser,
+  getUser,
+  deletePost,
+  getPost
 };
 

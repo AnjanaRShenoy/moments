@@ -6,48 +6,104 @@ import {
   Flex,
   Button,
   Text,
+  Icon,
+  Card,
+  CardHeader,
+  CardBody,
+  Avatar,
+  Heading,
+  IconButton,
+  CardFooter,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
-
+import { FaRegBookmark } from "react-icons/fa";
+import { IoIosHeartEmpty } from "react-icons/io";
+import { TbDotsCircleHorizontal } from "react-icons/tb";
+import { HiDotsVertical } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
-import { useListPostQuery } from "../../slices/userApiSlice";
-import { useCommentMutation } from "../../slices/userApiSlice";
+import {
+  useLikePostMutation,
+  useListPostQuery,
+  useReportPostMutation,
+  useSavePostMutation,
+  useCommentMutation,
+} from "../../slices/userApiSlice";
+import { toast } from "react-toastify";
 
 const Hero = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { data: posts, error, refetch } = useListPostQuery();
   const [postComment] = useCommentMutation();
-
+  const [savePosts] = useSavePostMutation();
+  const [like] = useLikePostMutation();
+  const [report] = useReportPostMutation();
   const [data, setData] = useState([]);
   const [comment, setComment] = useState(" ");
+  const [save, setSave] = useState(" ");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await refetch();
-        setData(posts);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
-  }, [refetch, data]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await refetch();
+  //       setData(posts);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [refetch, data]);
 
   const submitComment = async (postId) => {
     try {
       if (comment.trim()) {
         const res = await postComment({ comment, userInfo, postId }).unwrap();
-        // setComment("");
+        setComment(" ");
+        refetch()
       }
     } catch (err) {
       console.log(err);
     }
   };
 
+  const savePost = async (postId) => {
+    try {
+      const res = await savePosts({ userInfo, postId }).unwrap();
+      refetch()
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const likePost = async (postId) => {
+    try {
+      const res = await like({ userInfo, postId }).unwrap();
+      refetch()
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    setSave(() => savePost);
+  }, [savePost]);
+
+  const reportHandler = async (postId) => {
+    try {
+
+      const res = await report({ userInfo, postId }).unwrap();
+      refetch()
+      toast.success("Reported successfully");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div
       style={{
@@ -56,105 +112,144 @@ const Hero = () => {
         justifyContent: "center",
         alignItems: "center",
         gap: "20px",
+        width: "600px",
       }}
     >
-      {data ? (
-        data.map((posts) => (
-          <Box
+      {posts ? (
+        posts.map((posts) => (
+          <Card
             key={posts._id}
-            maxW="xl"
-            borderWidth="2.5px"
-            borderRadius="lg"
-            overflow="hidden"
-            // height="580px"
-            width="500px"
+            w="lg"
+            style={{ borderRadius: "20px", boxShadow: "none" }}
           >
-            <Box px="6" py="2">
-              <Box display="flex" alignItems="center">
-                <img
-                  src={`../../../${posts.userId.profileImage}`}
-                  alt=""
-                  style={{
-                    borderRadius: "50px",
-                    height: "35px",
-                    width: "35px",
-                    marginRight: "10px",
-                  }}
-                />
-                <Box
-                  mt="1"
-                  fontWeight="semibold"
-                  as="h6"
-                  lineHeight="tight"
-                  noOfLines={1}
-                >
-                  {posts.userId.name}
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              style={{
-                backgroundColor: "black",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                style={{ height: "380px" }}
-                src={`../../../${posts.post}`}
-                alt=""
-              />
-            </Box>
-            <Box px="6" py="2">
-              <Box display="flex" alignItems="center">
-                <i
-                  class="bi bi-heart"
-                  style={{ fontSize: "1.5rem", marginRight: "20px" }}
-                ></i>
+            <CardHeader>
+              <Flex spacing="4">
+                <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+                  <Image
+                    style={{
+                      borderRadius: "50px",
+                      height: "35px",
+                      width: "35px",
+                      marginRight: "10px",
+                    }}
+                    name={posts.userId.name}
+                    src={`../../../${posts.userId.profileImage}`}
+                  />
+
+                  <Box>
+                    <Heading size="sm">{posts.userId.name}</Heading>
+                  </Box>
+                </Flex>
+                <Menu placement="bottom-end">
+                  <MenuButton
+                    as={IconButton}
+                    variant="ghost"
+                    colorScheme="gray"
+                    aria-label="See menu"
+                    icon={<HiDotsVertical />}
+                  />
+
+                  <MenuList>
+                    <MenuItem onClick={() => reportHandler(posts._id)}>
+                      Report
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Flex>
+            </CardHeader>
+
+            <Image
+              style={{ height: "400px", margin: "0 10px" }}
+              objectFit="cover"
+              borderRadius="10px"
+              src={`../../../${posts.post}`}
+              alt=""
+            />
+
+            <CardBody>
+              {posts.bio && <Text>{posts.bio}</Text>}
+              <Box
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                }}
+              >
+                {posts.like && posts.like.find((user) => user.userId === userInfo._id) ? (
+                  <i
+                    class="bi bi-emoji-heart-eyes-fill"
+                    style={{ fontSize: "1.5rem"}}
+                    onClick={() => {
+                      likePost(posts._id);
+                    }}
+                  ></i>
+                ) : (
+                  <i
+                    class="bi bi-heart"
+                    style={{ fontSize: "1.5rem" }}
+                    onClick={() => {
+                      likePost(posts._id);
+                    }}
+                  ></i>
+                )}
 
                 <i class="bi bi-chat" style={{ fontSize: "1.5rem" }}></i>
-              </Box>
-              <hr style={{ margin: "0.8rem 0" }} />
-
-              <Flex>
-                <Input
-                  id="comment"
-                  bg="white"
-                  w="100%"
-                  p={4}
-                  color="black"
-                  borderWidth="1px"
-                  placeholder="Enter your comment"
-                  onChange={(e) => setComment(e.target.value)}
-                />
-                <Button
-                  type="submit"
-                  colorScheme="blue"
-                  ml={2}
+                <i
+                  class="bi bi-bookmark"
+                  style={{ fontSize: "1.5rem" }}
                   onClick={() => {
-                    submitComment(posts._id);
+                    savePost(posts._id);
                   }}
-                >
-                  Post
-                </Button>
-              </Flex>
-              <Text style={{ marginTop: "10px", marginBottom: "3px" }}>
-                {comment.text}
-              </Text>
-            </Box>
-          </Box>
+                ></i>
+              </Box>
+            </CardBody>
+
+            {/* <CardFooter
+              justify="space-between"
+              flexWrap="wrap"
+              sx={{
+                "& > button": {
+                  minW: "136px",
+                },
+              }}
+            ></CardFooter> */}
+            <Flex>
+              <Input
+                id="comment"
+                bg="white"
+                w="100%"
+                p={4}
+                color="black"
+                borderWidth="1px"
+                placeholder="Enter your comment"
+                width="80%"
+                marginLeft="15px"
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Button
+                type="submit"
+                colorScheme="blue"
+                ml={2}
+                onClick={() => {
+                  submitComment(posts._id);
+                }}
+              >
+                Post
+              </Button>
+            </Flex>
+            <Text style={{ marginTop: "10px", marginBottom: "3px" }}>
+              {comment.text}
+            </Text>
+          </Card>
         ))
       ) : (
-        <div>
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-        </div>
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
       )}
     </div>
   );

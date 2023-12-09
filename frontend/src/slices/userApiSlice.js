@@ -52,16 +52,16 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
     }),
 
     // to post the comments in homepage
-    comment:builder.mutation({
-      query: (data)=>({
-        url:`${USERS_URL}/comment`,
-        method:"POST",
-        body:data
+    comment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/comment`,
+        method: "POST",
+        body: data
       })
     }),
 
-     // to get the user details from backend
-     profile: builder.query({
+    // to get the user details from backend
+    profile: builder.query({
       query: (data) => ({
         url: `${USERS_URL}/profile`,
         method: "GET",
@@ -86,6 +86,34 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    likePost: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/likePost`,
+        method: "POST",
+        body: data,
+      })
+    }),
+    reportPost: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/reportPost`,
+        method: "POST",
+        body: data,
+      })
+    }),
+    savePost: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/savePost`,
+        method: "POST",
+        body: data,
+      })
+    }),
+getSavedPost: builder.query({
+  query: (data) => ({
+    url: `${USERS_URL}/savedPost`,
+    method: "GET",
+    body: data
+  })
+}),
 
 
   }),
@@ -102,5 +130,8 @@ export const {
   useProfileQuery,
   useUpdateUserMutation,
   useUpdateProfileImageMutation,
-
+  useLikePostMutation,
+  useReportPostMutation,
+  useSavePostMutation,
+  useGetSavedPostQuery
 } = userAdminApiSlice;

@@ -4,15 +4,19 @@ import {
   registerUser,
   logoutUser,
   // getUserProfile,
-  // updateUserProfile,
+  updateUserProfile,
   updateUserImage,
   checkOtp,
   createPost,
   listPost,
   comment,
   profile,
+  savePost,
+  getSavedPost,
+  likePost, 
+  reportPost
 } from "../controllers/userController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { auth } from "../middleware/authMiddleware.js";
 import { upload } from "../config/multer.js";
 
 const router = express.Router();
@@ -25,16 +29,24 @@ router.post("/auth", authUser);
 
 router.post("/logout", logoutUser);
 
-router.post("/post", upload.single("filed"), createPost)
+router.post("/post",auth, upload.single("filed"), createPost)
 
-router.get("/listPost", listPost)
+router.get("/listPost", auth, listPost)
 
-router.post("/comment", comment)
+router.post("/comment",auth, comment)
 
-router.get("/profile", profile)
+router.get("/profile", auth, profile)
 
-// router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
+router.put("/updateProfile",auth, updateUserProfile);
 
-router.put("/profile-updateImage", upload.single("image"), protect, updateUserImage);
+router.put("/profile-updateImage",auth, upload.single("image"), updateUserImage);
+
+router.post("/savePost",auth, savePost)
+
+router.get("/savedPost", auth, getSavedPost)
+
+router.post("/likePost", auth,likePost)
+
+router.post("/reportPost",auth, reportPost)
 
 export default router;
