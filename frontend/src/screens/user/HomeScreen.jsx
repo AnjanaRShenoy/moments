@@ -1,15 +1,8 @@
-import React from 'react'
-import  Hero  from '../../components/userComponents/Hero.jsx'
-
+import React from "react";
+import Hero from "../../components/userComponents/Hero.jsx";
 
 const HomeScreen = () => {
-  return (
-    
-    <div>
-      <Hero/>
-    </div>
-   
-  )
-}
+  return <Hero />;
+};
 
-export default HomeScreen
+export default HomeScreen;

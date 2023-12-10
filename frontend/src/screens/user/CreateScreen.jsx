@@ -12,37 +12,38 @@ import { useDisclosure } from "@chakra-ui/react";
 import { Flex } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { usePostMutation } from "../../slices/userApiSlice";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreateScreen = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [image, setImage] = useState();
-  const [imagePreview, setImagePreview] = useState("");
 
-  const { userInfo } = useSelector((state) => state.auth);    //fetching userInfo from store
+  const { userInfo } = useSelector((state) => state.auth); //fetching userInfo from store
 
   const navigate = useNavigate();
 
-  const [post, { isLoading }] = usePostMutation();        
+  const [post, { isLoading }] = usePostMutation();
   const fileInput = useRef(null);
 
   const handleFileChange = async (event) => {
-    const selectedFile = event.target.files[0]; 
+    const selectedFile = event.target.files[0];
     setImage(selectedFile);
   };
 
-  const postImage = async () => {         //to post the image 
+  const postImage = async () => {
+    //to post the image
 
     try {
       const formData = new FormData();
-    
+
       formData.append("filed", image);
       formData.append("userInfo", JSON.stringify(userInfo));
 
       const res = await post(formData).unwrap();
-
+      toast.success("Successfully uploaded the post");
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -59,12 +60,17 @@ const CreateScreen = () => {
 
   return (
     <>
-      <Button style={{color:"cyan.400"}} onClick={onOpen}>Create new Post</Button>
+      <Button style={{ color: "cyan.400" }} onClick={onOpen}>
+        Create new Post
+      </Button>
 
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader style={{ align: "center", justify: "center" }} _hover={{bgColor:"cyan"}}>
+          <ModalHeader
+            style={{ align: "center", justify: "center" }}
+            _hover={{ bgColor: "cyan" }}
+          >
             Create new post
           </ModalHeader>
           <Image
@@ -88,7 +94,11 @@ const CreateScreen = () => {
                     postImage(e);
                   }}
                 />
-                <Button colorScheme="blue" style={{ width: "180px" }} onClick={postImage}>
+                <Button
+                  colorScheme="blue"
+                  style={{ width: "180px" }}
+                  onClick={postImage}
+                >
                   Next
                 </Button>
               </>

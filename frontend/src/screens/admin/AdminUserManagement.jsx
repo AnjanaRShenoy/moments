@@ -6,7 +6,7 @@ import {
   Th,
   Td,
   TableContainer,
- 
+  Flex,
 } from "@chakra-ui/react";
 import {
   useBlockUserMutation,
@@ -16,7 +16,6 @@ import { useState, useEffect } from "react";
 import { Button, CardTitle } from "react-bootstrap";
 
 const AdminUserManagement = () => {
- 
   const { data: users, error, refetch } = useListUsersQuery();
 
   const [block] = useBlockUserMutation();
@@ -36,20 +35,20 @@ const AdminUserManagement = () => {
 
   const blockUser = async (userId, status) => {
     try {
-      const res = await block({userId, status}).unwrap();
-      refetch()
+      const res = await block({ userId, status }).unwrap();
+      refetch();
     } catch (err) {
       console.log(err);
     }
   };
-  
+
   return (
-    <>
-      <CardTitle align={"center"} justify={"center"}>
+    <Flex flexDirection={"column"}>
+      <CardTitle align={"center"} justify={"center"} style={{color:"white"}}>
         <h2>Users</h2>
       </CardTitle>
       <br />
-      <TableContainer>
+      <TableContainer style={{backgroundColor:"white"}}>
         <Table variant="striped" colorScheme="teal">
           {/* <TableCaption>User table</TableCaption>3 */}
 
@@ -85,7 +84,7 @@ const AdminUserManagement = () => {
           </Tbody>
         </Table>
       </TableContainer>
-    </>
+    </Flex>
   );
 };
 export default AdminUserManagement;

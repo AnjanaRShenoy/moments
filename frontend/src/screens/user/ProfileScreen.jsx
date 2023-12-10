@@ -36,7 +36,7 @@ export default function UserProfileEdit() {
   const [image, setImage] = useState("");
   const [data, setData] = useState([]);
 
-  const [profileUpdate] = useUpdateProfileImageMutation();
+  const [profileUpdate] = useUpdateUserMutation();
 
   const { data: user, error, refetch } = useProfileQuery({ _id: userInfo._id });
 
@@ -53,17 +53,11 @@ export default function UserProfileEdit() {
     setImage(selectedFile);
   };
 
-  const changePhoto = async (userId) => {
- 
+  const changePhoto = async () => {
     try {
-      const formData = new FormData();    
-
-      formData.append("filed", image);
-      formData.append("userInfo",JSON.stringify(userInfo))
-
-      const res= await profileUpdate(formData).unwrap()
-
-      toast.success("successfully changed the pro-pic")
+      if (fileInput.current) {
+        fileInput.current.click();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -75,12 +69,15 @@ export default function UserProfileEdit() {
       if (!name.trim() || !phoneNumber.trim()) {
         toast.error("Please enter all fields");
       } else {
+        var photo = image.name;
+        console.log(photo, "photo");
         try {
           const res = await profileUpdate({
             _id: userInfo._id,
             name,
             phoneNumber,
             bio,
+            photo,
           }).unwrap();
           dispatch(setCredentials(res));
           toast.success("Profile updated successfully");
@@ -116,7 +113,11 @@ export default function UserProfileEdit() {
               <Stack direction={["column", "row"]} spacing={6}>
                 <Center>
                   <img
-                    src={`../../../${user.profileImage}`}
+                    src={
+                      image
+                        ? URL.createObjectURL(image)
+                        : `../../../${user.profileImage}`
+                    }
                     style={{
                       size: "sm",
                       rounded: "full",
@@ -133,15 +134,9 @@ export default function UserProfileEdit() {
                     name="filed"
                     ref={fileInput}
                     style={{ display: "none" }}
-                    onChange={(e) => {
-                      handleFileChange(e);
-                    }}
+                    onChange={handleFileChange}
                   />
-                  <Button
-                    w="full"
-                    ref={fileInput}
-                    onClick={() => changePhoto(user._id)}
-                  >
+                  <Button w="full" onClick={changePhoto}>
                     Edit Profile photo
                   </Button>
                 </Center>

@@ -199,19 +199,20 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 // to make changes in profile
 const updateUserProfile = asyncHandler(async (req, res) => {
-  console.log(req.body);
+  console.log(req.body, "updateUser");
   const user = await User.findById(req.body._id);
   if (user) {
     user.name = req.body.name || user.name;
     user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
     user.bio = req.body.bio || user.bio
+    user.profileImage= req.body.photo 
     const updatedUser = await user.save();
     res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       phoneNumber: updatedUser.phoneNumber,
       bio: updatedUser.bio,
-
+      profileImage:updatedUser.profileImage
     });
   } else {
     res.status(404);
@@ -226,7 +227,7 @@ const updateUserImage = asyncHandler(async (req, res) => {
     if (req.body) {
       User.findByIdAndUpdate(
         { _id: req.body._id },
-        // { profileImage: req.file.filename }
+        { profileImage: req.file.filename }
       ).catch(err => {
         console.log(err.message);
       })
@@ -297,7 +298,7 @@ const profile = asyncHandler(async (req, res) => {
   try {
 
     const { _id } = req.query;
-    console.log(_id);
+
     const user = await User.findById(_id)
     res.status(200).json(user)
   } catch (err) {
@@ -323,7 +324,7 @@ const savePost = asyncHandler(async (req, res) => {
     } else {
       const savePost = await User.findOneAndUpdate(
         { _id: userInfo._id },
-        { $push: { savedPost: [ postId ] } },
+        { $push: { savedPost: [postId] } },
         { upsert: true, new: true }
       )
       res.status(200).json({ message: "Post has been saved" })
@@ -346,7 +347,7 @@ const getSavedPost = asyncHandler(async (req, res) => {
 
 const likePost = asyncHandler(async (req, res) => {
   try {
-    console.log("entered lik");
+
     const userInfo = req.body.userInfo
     const postId = req.body.postId
 
@@ -380,13 +381,13 @@ const reportPost = asyncHandler(async (req, res) => {
     const userInfo = req.body.userInfo
     const postId = req.body.postId
     const posts = await Post.findOne({ _id: postId })
-    const alreadyReported = posts.report.some(report => report.userId.equals(userInfo._id));
+    const alreadyReported = posts.report.includes(userInfo._id)
     if (alreadyReported) {
       res.status(200).json({ message: "You have reported the post" })
     } else {
       const post = await Post.findByIdAndUpdate(
         { _id: postId },
-        { $push: { report: { userId: userInfo._id } } },
+        { $push: { report: [userInfo._id] } },
         { upsert: true, new: true }
       );
 

@@ -97,7 +97,8 @@ const Hero = () => {
   }, [savePost]);
 
   const reportHandler = async (postId) => {
-    try {
+    try {debugger
+     
       const res = await report({ userInfo, postId }).unwrap();
       refetch();
       toast.success("Reported successfully");
@@ -113,7 +114,7 @@ const Hero = () => {
         justifyContent: "center",
         alignItems: "center",
         gap: "20px",
-        width: "600px",
+        // width: "600px",
       }}
     >
       {posts ? (

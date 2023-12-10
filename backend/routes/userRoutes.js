@@ -38,7 +38,7 @@ router.post("/comment",auth, comment)
 
 router.get("/profile", auth, profile)
 
-router.put("/updateProfile",auth, updateUserProfile);
+router.put("/updateProfile",auth, upload.single("filed"),updateUserProfile);
 
 router.put("/profileUpdateImage",auth, upload.single("filed"), updateUserImage);
 
