@@ -11,17 +11,18 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         }),
 
         listUsers: builder.query({
-            query: (data) => ({
+            query: () => ({
                 url: `${ADMIN_URL}/listUsers`,
                 method: "GET",
-                body: data,
+                
             }),
         }),
+
         getPost: builder.query({
-            query: (data) => ({
+            query: () => ({
                 url: `${ADMIN_URL}/getPost`,
                 method: "GET",
-                body: data,
+              
             }),
         }),
         
@@ -80,6 +81,8 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
                 body:data,
             }),
         }),
+
+        
     })
 })
 export const {
@@ -93,5 +96,6 @@ export const {
   useGetUserMutation,
   usePostDeleteMutation,
   useBlockUserMutation,
-  useGetPostQuery
+  useGetPostQuery,
+
 } = userAdminApiSlice;

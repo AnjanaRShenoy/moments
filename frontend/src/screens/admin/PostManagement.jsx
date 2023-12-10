@@ -37,6 +37,7 @@ import {
   
   const PostManagement = () => {
     const [remove] = usePostDeleteMutation();
+    debugger
     const { data: posts, error, refetch } = useGetPostQuery();
   
     const { isOpen, onOpen, onClose } = useDisclosure();

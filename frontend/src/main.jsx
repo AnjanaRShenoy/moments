@@ -11,7 +11,6 @@ import { Provider } from "react-redux";
 import App from "./App.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 import { ChakraProvider } from "@chakra-ui/react";
 
 import LoginScreen from "./screens/user/LoginScreen.jsx";
@@ -38,11 +37,11 @@ const router = createBrowserRouter(
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/" element={<App admin={false} />}>
-        <Route index={true} path="/" element={<HomeScreen />} />
         <Route path="" element={<PrivateRoute />}>
+          <Route index={true} path="/" element={<HomeScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
           <Route path="/create" element={<CreateScreen />} />
-          <Route path="/savedPost" element={<SavedPostScreen/>}/>
+          <Route path="/savedPost" element={<SavedPostScreen />} />
         </Route>
       </Route>
 
@@ -53,9 +52,12 @@ const router = createBrowserRouter(
         <Route path="/admin/create-user" element={<AdminCreateUser />} />
         <Route path="/admin/edit-user/:user" element={<AdminEditUser />} />
         <Route path="" element={<PrivateRouteAdmin />}>
-          <Route path="/admin/" element={<HomeAdmin />}/>
-          <Route path="/admin/userManagement" element={<AdminUserManagement/>}/>
-          <Route path="/admin/postManagement" element={<PostManagement/>}/>
+          <Route path="/admin/" element={<HomeAdmin />} />
+          <Route
+            path="/admin/userManagement"
+            element={<AdminUserManagement />}
+          />
+          <Route path="/admin/postManagement" element={<PostManagement />} />
         </Route>
       </Route>
     </>

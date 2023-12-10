@@ -14,6 +14,13 @@ const postSchema = mongoose.Schema(
             type: String,
             required:true
         },
+        like:[{
+            userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            }
+        }],
+        report:[],
+
         createdAt: {
             type: Date,
             default:Date.now(),

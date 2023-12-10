@@ -7,19 +7,17 @@ import {
   Input,
   Stack,
   useColorModeValue,
-  Avatar,
-  AvatarBadge,
-  IconButton,
   Center,
-  Spinner
+  Spinner,
 } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import {
   useProfileQuery,
+  useUpdateProfileImageMutation,
   useUpdateUserMutation,
 } from "../../slices/userApiSlice";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
@@ -27,16 +25,18 @@ import { setCredentials } from "../../slices/authSlice";
 
 export default function UserProfileEdit() {
   const { userInfo } = useSelector((state) => state.auth);
-  const dispatch= useDispatch()
+  const dispatch = useDispatch();
+  const fileInput = useRef(null);
+
+  const [profileImageUpdate] = useUpdateProfileImageMutation();
 
   const [name, setName] = useState("");
-
   const [phoneNumber, setphoneNumber] = useState("");
   const [bio, setBio] = useState("");
-
+  const [image, setImage] = useState("");
   const [data, setData] = useState([]);
 
-  const [profileUpdate] = useUpdateUserMutation();
+  const [profileUpdate] = useUpdateProfileImageMutation();
 
   const { data: user, error, refetch } = useProfileQuery({ _id: userInfo._id });
 
@@ -44,16 +44,34 @@ export default function UserProfileEdit() {
     if (user) {
       setName(user.name || "");
       setphoneNumber(user.phoneNumber || "");
-
       setBio(user.bio || "");
     }
   }, [user]);
 
-  const updateProfile = async (e) => {
+  const handleFileChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    setImage(selectedFile);
+  };
 
+  const changePhoto = async (userId) => {
+ 
+    try {
+      const formData = new FormData();    
+
+      formData.append("filed", image);
+      formData.append("userInfo",JSON.stringify(userInfo))
+
+      const res= await profileUpdate(formData).unwrap()
+
+      toast.success("successfully changed the pro-pic")
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const updateProfile = async (e) => {
     e.preventDefault();
     try {
-     
       if (!name.trim() || !phoneNumber.trim()) {
         toast.error("Please enter all fields");
       } else {
@@ -97,20 +115,35 @@ export default function UserProfileEdit() {
               <FormLabel>Profile Photo</FormLabel>
               <Stack direction={["column", "row"]} spacing={6}>
                 <Center>
-                  <Avatar size="xl" src="https://bit.ly/sage-adebayo">
-                    <AvatarBadge
-                      as={IconButton}
-                      size="sm"
-                      rounded="full"
-                      top="-10px"
-                      colorScheme="red"
-                      aria-label="remove Image"
-                      icon={<SmallCloseIcon />}
-                    />
-                  </Avatar>
+                  <img
+                    src={`../../../${user.profileImage}`}
+                    style={{
+                      size: "sm",
+                      rounded: "full",
+                      top: "-10px",
+                      colorScheme: "red",
+                      height: "60px",
+                      width: "75px",
+                    }}
+                  />
                 </Center>
                 <Center w="full">
-                  <Button w="full">Edit Profile photo</Button>
+                  <input
+                    type="file"
+                    name="filed"
+                    ref={fileInput}
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      handleFileChange(e);
+                    }}
+                  />
+                  <Button
+                    w="full"
+                    ref={fileInput}
+                    onClick={() => changePhoto(user._id)}
+                  >
+                    Edit Profile photo
+                  </Button>
                 </Center>
               </Stack>
             </FormControl>
@@ -181,12 +214,12 @@ export default function UserProfileEdit() {
           </>
         ) : (
           <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
         )}
       </Stack>
     </Flex>

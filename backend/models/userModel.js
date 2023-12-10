@@ -44,6 +44,7 @@ const userSchema = mongoose.Schema(
       default: false,
       required: true
     },
+    savedPost:[]
   },
   {
     timestamps: true,

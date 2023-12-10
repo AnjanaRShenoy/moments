@@ -199,19 +199,19 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 // to make changes in profile
 const updateUserProfile = asyncHandler(async (req, res) => {
-console.log(req.body);
+  console.log(req.body);
   const user = await User.findById(req.body._id);
   if (user) {
     user.name = req.body.name || user.name;
     user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-  user.bio= req.body.bio || user.bio
+    user.bio = req.body.bio || user.bio
     const updatedUser = await user.save();
     res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       phoneNumber: updatedUser.phoneNumber,
       bio: updatedUser.bio,
- 
+
     });
   } else {
     res.status(404);
@@ -223,9 +223,9 @@ console.log(req.body);
 const updateUserImage = asyncHandler(async (req, res) => {
   try {
 
-    if (req.file) {
+    if (req.body) {
       User.findByIdAndUpdate(
-        { _id: req.body.id },
+        { _id: req.body._id },
         // { profileImage: req.file.filename }
       ).catch(err => {
         console.log(err.message);
@@ -262,7 +262,8 @@ const createPost = asyncHandler(async (req, res) => {
 const listPost = asyncHandler(async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate("userId")                     //to retrieve the user name and details 
+      .populate("userId")
+      .sort({ _id: -1 })                    //to retrieve the user name and details 
 
     // const comments = await Comment.find()     //to retrieve the user and post details 
     //   .populate("userId postId")
@@ -294,7 +295,7 @@ const comment = asyncHandler(async (req, res) => {
 // to get the user profile for showing profile details
 const profile = asyncHandler(async (req, res) => {
   try {
-    console.log("hooo");
+
     const { _id } = req.query;
     console.log(_id);
     const user = await User.findById(_id)
@@ -310,17 +311,21 @@ const savePost = asyncHandler(async (req, res) => {
 
     const userInfo = req.body.userInfo
     const postId = req.body.postId
-
-    const postExist = await SavePost.findOne({ postId: postId });
+    const user = await User.findById(userInfo._id)
+    const postExist = user.savedPost.includes(postId);
 
     if (postExist) {
-      const unSave = await SavePost.deleteOne({ postId })
+      const unSave = await User.findOneAndUpdate(
+        { _id: userInfo._id },
+        { $pull: { savedPost: [postId] } },
+        { new: true })
       res.status(200).json({ message: "Post has been unsaved" })
     } else {
-      const savePost = await SavePost.create({
-        userId: userInfo._id,
-        postId: postId
-      })
+      const savePost = await User.findOneAndUpdate(
+        { _id: userInfo._id },
+        { $push: { savedPost: [ postId ] } },
+        { upsert: true, new: true }
+      )
       res.status(200).json({ message: "Post has been saved" })
     }
   } catch (err) {
@@ -330,9 +335,7 @@ const savePost = asyncHandler(async (req, res) => {
 
 const getSavedPost = asyncHandler(async (req, res) => {
   try {
-    console.log(req.query, 'lllllllllll');
-
-    const savedPost = await SavePost.find()
+    const savedPost = await SavePost.find({ userId: req.query._id })
       .populate("userId postId")
 
     res.status(200).json(savedPost)
@@ -343,6 +346,7 @@ const getSavedPost = asyncHandler(async (req, res) => {
 
 const likePost = asyncHandler(async (req, res) => {
   try {
+    console.log("entered lik");
     const userInfo = req.body.userInfo
     const postId = req.body.postId
 
@@ -394,6 +398,20 @@ const reportPost = asyncHandler(async (req, res) => {
   }
 })
 
+const checkUserBlocked = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById({ _id: req.query._id })
+    if (user.isBlocked === true) {
+      var Blocked = true
+    } else {
+      var Blocked = false
+    }
+    res.json({ Blocked })
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 export {
   authUser,
   registerUser,
@@ -410,4 +428,5 @@ export {
   getSavedPost,
   likePost,
   reportPost,
+  checkUserBlocked
 };

@@ -18,6 +18,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Badge
 } from "@chakra-ui/react";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -65,7 +66,7 @@ const Hero = () => {
       if (comment.trim()) {
         const res = await postComment({ comment, userInfo, postId }).unwrap();
         setComment(" ");
-        refetch()
+        refetch();
       }
     } catch (err) {
       console.log(err);
@@ -75,7 +76,7 @@ const Hero = () => {
   const savePost = async (postId) => {
     try {
       const res = await savePosts({ userInfo, postId }).unwrap();
-      refetch()
+      refetch();
     } catch (err) {
       console.log(err);
     }
@@ -83,8 +84,9 @@ const Hero = () => {
 
   const likePost = async (postId) => {
     try {
+     
       const res = await like({ userInfo, postId }).unwrap();
-      refetch()
+      refetch();
     } catch (err) {
       console.log(err);
     }
@@ -96,9 +98,8 @@ const Hero = () => {
 
   const reportHandler = async (postId) => {
     try {
-
       const res = await report({ userInfo, postId }).unwrap();
-      refetch()
+      refetch();
       toast.success("Reported successfully");
     } catch (err) {
       console.log(err);
@@ -175,10 +176,11 @@ const Hero = () => {
                   justifyContent: "space-around",
                 }}
               >
-                {posts.like && posts.like.find((user) => user.userId === userInfo._id) ? (
+                {posts.like &&
+                posts.like.find((user) => user.userId === userInfo._id) ? (
                   <i
                     class="bi bi-emoji-heart-eyes-fill"
-                    style={{ fontSize: "1.5rem"}}
+                    style={{ fontSize: "1.5rem" }}
                     onClick={() => {
                       likePost(posts._id);
                     }}
@@ -251,6 +253,7 @@ const Hero = () => {
           size="xl"
         />
       )}
+      
     </div>
   );
 };

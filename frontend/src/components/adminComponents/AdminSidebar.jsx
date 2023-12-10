@@ -1,43 +1,30 @@
 import React from "react";
 import {
   IconButton,
-  Avatar,
   Box,
   CloseButton,
   Flex,
-  HStack,
-  VStack,
   Icon,
   useColorModeValue,
-  Text,
   Drawer,
   DrawerContent,
   useDisclosure,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
 } from "@chakra-ui/react";
-import { FiSettings, FiMenu, FiChevronDown } from "react-icons/fi";
-import { FaUsers } from "react-icons/fa";
+import { FiSettings, FiMenu } from "react-icons/fi";
+import { FaUsers, FaRegComment } from "react-icons/fa";
 import { SiSocialblade } from "react-icons/si";
 import { CiSignpostDuo1 } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAdminLogoutMutation } from "../../slices/adminApiSlice";
 import { adminLogout } from "../../slices/adminAuthSlice";
-import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { FaRegComment } from "react-icons/fa";
-import { IoMdLogOut } from "react-icons/io";
-// import {} from "../../public/images"
+import { RiLogoutCircleRLine } from "react-icons/ri";
 
 const LinkItems = [
   { name: "Dashboard", icon: SiSocialblade, url: "/admin/" },
-  { name: "User Management", icon: FaUsers, url: "/admin/" },
-  { name: "Post management", icon: CiSignpostDuo1, url: "/admin/" },
+  { name: "User Management", icon: FaUsers, url: "/admin/userManagement" },
+  { name: "Post management", icon: CiSignpostDuo1, url: "/admin/postManagement" },
   { name: "Comment Management", icon: FaRegComment, url: "/admin/" },
   { name: "Settings", icon: FiSettings, url: "/admin/" },
 ];
@@ -114,7 +101,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </NavItem>
       ))}
       <Box>
-        <NavItem onClick={logoutHandler} icon="IoMdLogOut">
+        <NavItem onClick={logoutHandler} icon={RiLogoutCircleRLine}>
           <Link as={Link} to="/logout">
             Logout
           </Link>
@@ -189,4 +176,3 @@ const MobileNav = ({ onOpen, ...rest }) => {
     </Flex>
   );
 };
-

@@ -11,7 +11,8 @@ const savePostSchema = mongoose.Schema(
             type: String
         },
         post: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"Post",
             required:true
         },
         createdAt: {

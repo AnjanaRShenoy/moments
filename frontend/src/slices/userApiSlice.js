@@ -62,29 +62,30 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
     // to get the user details from backend
     profile: builder.query({
-      query: (data) => ({
-        url: `${USERS_URL}/profile`,
+      query: ({ _id }) => ({
+        url: `${USERS_URL}/profile?_id=${_id}`,
         method: "GET",
-        body: data
       })
     }),
 
 
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
+        url: `${USERS_URL}/updateProfile`,
         method: "PUT",
         body: data,
       }),
     }),
 
+
     updateProfileImage: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile-updateImage`,
+        url: `${USERS_URL}/profileUpdateImage`,
         method: "PUT",
         body: data,
       }),
     }),
+
 
     likePost: builder.mutation({
       query: (data) => ({
@@ -93,6 +94,8 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data,
       })
     }),
+
+
     reportPost: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/reportPost`,
@@ -100,6 +103,8 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data,
       })
     }),
+
+
     savePost: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/savePost`,
@@ -107,14 +112,23 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data,
       })
     }),
-getSavedPost: builder.query({
-  query: (data) => ({
-    url: `${USERS_URL}/savedPost`,
-    method: "GET",
-    body: data
-  })
-}),
 
+
+    getSavedPost: builder.query({
+      query: (data) => ({
+        url: `${USERS_URL}/savedPost`,
+        method: "GET",
+        body: data
+      })
+    }),
+
+
+    checkUserBlocked: builder.query({
+      query: ({ _id }) => ({
+        url: `${USERS_URL}/checkUserBlocked?_id=${_id}`,
+        method: "GET"
+      })
+    })
 
   }),
 });
@@ -133,5 +147,6 @@ export const {
   useLikePostMutation,
   useReportPostMutation,
   useSavePostMutation,
-  useGetSavedPostQuery
+  useGetSavedPostQuery,
+  useCheckUserBlockedQuery,
 } = userAdminApiSlice;
