@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useLoginMutation } from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
+import { ToastContainer } from 'react-toastify';
 import { toast } from "react-toastify";
 import Loader from "../../components/mutualComponents/Loader";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
@@ -167,6 +168,7 @@ const LoginScreen = () => {
           </Form>
         </Box>
       </Stack>
+      <ToastContainer/>
     </Flex>
   );
 };

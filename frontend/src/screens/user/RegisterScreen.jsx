@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRegisterMutation, useOtpMutation } from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
+import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -15,14 +16,17 @@ import {
   FormControl,
   FormLabel,
   Input,
-  InputGroup,
   Stack,
   Button,
   Heading,
-  Text,
   useColorModeValue,
-useToast
+  useToast,
+  Checkbox,
+  FormErrorMessage,
+  VStack,
+  Text,
 } from "@chakra-ui/react";
+import { Field, Formik, ErrorMessage } from "formik";
 
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 const RegisterScreen = () => {
@@ -43,29 +47,13 @@ const RegisterScreen = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (values) => {
     //to submit the signup form, validate and send to back end
-    e.preventDefault();
+    debugger;
 
-    if (password !== confirmPassword) {
-      Toast({
-        title: "Passwords do not match",
-        status: "error",
-        isClosable: true,
-      });
-    } else if (
-      !name.trim() ||
-      !email.trim() ||
-      !phoneNumber.trim() ||
-      !password.trim() ||
-      !confirmPassword.trim()
-    ) {
-      Toast({
-        title: "Empty fields, please enter value",
-        status: "error",
-        isClosable: true,
-      });
-    } else {
+    const { name, email, phoneNumber, password, confirmPassword } = values;
+   
+  
       try {
         const res = await register({
           //response brought from backend
@@ -82,7 +70,7 @@ const RegisterScreen = () => {
           isClosable: true,
         });
       }
-    }
+    
   };
   const resendOtp = async (e) => {
     try {
@@ -92,13 +80,12 @@ const RegisterScreen = () => {
         phoneNumber,
         password,
       }).unwrap();
-      
     } catch {
       toast({
-          title: err?.data?.message || err.error,
-          status: "error",
-          isClosable: true,
-        });
+        title: err?.data?.message || err.error,
+        status: "error",
+        isClosable: true,
+      });
     }
   };
 
@@ -156,110 +143,205 @@ const RegisterScreen = () => {
             boxShadow={"lg"}
             p={8}
           >
-            <Form onSubmit={submitHandler}>
-              <Stack spacing={4}>
-                <FormControl id="email">
-                  <FormLabel>Name</FormLabel>
-                  <Input
-                    type="name"
-                    placeholder="Enter name"
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="phoneNumber">
-                  <FormLabel>Phone Number</FormLabel>
-                  <Input
-                    type="phoneNumber"
-                    placeholder="Enter phone number"
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="email">
-                  <FormLabel>Email address</FormLabel>
-                  <Input
-                    type="email"
-                    placeholder="Enter email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="password">
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={password ? "text" : "password"}
-                      placeholder="Enter password"
-                      onChange={(e) => setPassword(e.target.value)}
-                      onkeyup="validatePassword"
-                    />
+            <Formik
+              initialValues={{
+                name: "",
+                phoneNumber: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+              }}
+              onSubmit={(values) => submitHandler(values)}
+            >
+              {({ handleSubmit, errors, touched }) => (
+                <form onSubmit={handleSubmit}>
+                  <VStack spacing={4} align="flex-start">
+                    <FormControl isInvalid={!!errors.name && touched.name}>
+                      <FormLabel htmlFor="name">Name</FormLabel>
+                      <Field
+                        as={Input}
+                        id="name"
+                        name="name"
+                        type="name"
+                        variant="filled"
+                        // onChange={(e) => {
+                        //   setName(e.target.value);
+                        //   values.name = e.target.value;
+                        // }}
+                        validate={(value) => {
+                          let error;
+
+                          if (value.length === 0) {
+                            error = "Name field cannot be empty";
+                          }
+                          if (
+                            !value.match(/(^[a-zA-Z][a-zA-Z\s]{0,20}[a-zA-Z]$)/)
+                          ) {
+                            error = "Invalid name";
+                          }
+
+                          return error;
+                        }}
+                      />
+                      <FormErrorMessage>{errors.name}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={!!errors.email && touched.email}>
+                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <Field
+                        as={Input}
+                        id="email"
+                        name="email"
+                        type="email"
+                        variant="filled"
+                        // onChange={(e) => {
+                        //   setEmail(e.target.value);
+                        //   values.email = e.target.value;
+                        // }}
+                        validate={(value) => {
+                          let error;
+
+                          if (value.length === 0) {
+                            error = "email field cannot be empty";
+                          }
+                          if (
+                            !value.match(
+                              /^[a-zA-Z0-9.!#$%&’+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)$/
+                            )
+                          ) {
+                            error = "Invalid email address";
+                          }
+                          return error;
+                        }}
+                      />
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl
+                      isInvalid={!!errors.phoneNumber && touched.phoneNumber}
+                    >
+                      <FormLabel htmlFor="phoneNumber">Phone Number</FormLabel>
+                      <Field
+                        as={Input}
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        type="phoneNumber"
+                        variant="filled"
+                        // onChange={(e) => {
+                        //   setPhoneNumber(e.target.value);
+                        //   values.phoneNumber = e.target.value;
+                        // }}
+                        validate={(value) => {
+                          let error;
+
+                          if (value.length !== 10) {
+                            error = "Phone Number should be ten digits";
+                          }
+                          if (value.charAt(0) === "0") {
+                            error = "Please enter valid phone number";
+                          }
+                          return error;
+                        }}
+                      />
+                      <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl
+                      isInvalid={!!errors.password && touched.password}
+                    >
+                      <FormLabel htmlFor="password">Password</FormLabel>
+                      <Field
+                        as={Input}
+                        id="password"
+                        name="password"
+                        type="password"
+                        variant="filled"
+                        // onChange={(e) => {
+                        //   setPassword(e.target.value);
+                        //   values.password = e.target.value;
+                        // }}
+                        validate={(value) => {
+                          let error;
+
+                          if (value.length < 6) {
+                            error =
+                              "Password must contain at least 6 characters";
+                          }
+
+                          return error;
+                        }}
+                      />
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl
+                      isInvalid={!!errors.password && touched.password}
+                    >
+                      <FormLabel htmlFor="confirmPassword">
+                        Confirm Password
+                      </FormLabel>
+                      <Field
+                        as={Input}
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        variant="filled"
+                        // onChange={(e) => {
+                        //   setConfirmPassword(e.target.value);
+                        //   values.confirmPassword = e.target.value;
+                        // }}
+                        validate={(value) => {
+                          let error;
+
+                          if (value.length < 6) {
+                            error =
+                              "Password must contain at least 6 characters";
+                          }
+                          return error;
+                        }}
+                      />
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
+                    </FormControl>
 
                     <Button
-                      variant={"ghost"}
-                      onClick={() => setPassword((Password) => !Password)}
+                      type="submit"
+                      loadingText="Submitting"
+                      size="lg"
+                      bg={"blue.400"}
+                      color={"white"}
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      align={"center"}
+                      justify={"center"}
                     >
-                      {password ? <ViewIcon /> : <ViewOffIcon />}
+                      Sign Up
                     </Button>
-                  </InputGroup>
-                </FormControl>
-                <FormControl id="password">
-                  <FormLabel>Confirm password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={password ? "text" : "password"}
-                      placeholder="Enter password"
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-
-                    <Button
-                      variant={"ghost"}
-                      onClick={() =>
-                        setConfirmPassword((Password) => !Password)
-                      }
-                    >
-                      {password ? <ViewIcon /> : <ViewOffIcon />}
-                    </Button>
-                  </InputGroup>
-                </FormControl>
-                <Stack spacing={10} pt={2}>
-                  {isLoading && <Loader />}
-                  <Button
-                    type="submit"
-                    loadingText="Submitting"
-                    size="lg"
-                    bg={"blue.400"}
-                    color={"white"}
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                  >
-                    Sign Up
-                  </Button>
-                </Stack>
-                <div
-                  style={{ borderTop: "0.5px solid #000", width: "100%" }}
-                ></div>
-                <h6 style={{ textAlign: "center" }}>Or Signup with</h6>
-                <GoogleOAuthProvider clientId="491369151018-90df2bi9i480ivns1lmojepi9p2r9vg1.apps.googleusercontent.com">
-                  <GoogleLogin
-                    onSuccess={(credentialResponse) => {
-                      const decoded = jwtDecode(credentialResponse.credential);
-                      googleHandler(decoded);
-                    }}
-                    onError={() => {
-                      console.log("Login Failed");
-                    }}
-                  />
-                </GoogleOAuthProvider>
-
-                <Stack pt={6}>
-                  <Text align={"center"}>
-                    Already have an account?
-                    <Link to="/login" cursor={"pointer"} color={"blue.400"}>
-                      Login
-                    </Link>
-                  </Text>
-                </Stack>
-              </Stack>
-            </Form>
+                  </VStack>
+                </form>
+              )}
+            </Formik>
+            <div style={{ borderTop: "0.5px solid #000", width: "100%" }}></div>
+            <h6 style={{ textAlign: "center" }}>Or Signup with</h6>
+            <GoogleOAuthProvider clientId="491369151018-90df2bi9i480ivns1lmojepi9p2r9vg1.apps.googleusercontent.com">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  const decoded = jwtDecode(credentialResponse.credential);
+                  googleHandler(decoded);
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </GoogleOAuthProvider>
+            <Stack pt={6}>
+              <Text align={"center"}>
+                Already have an account?
+                <Link to="/login" cursor={"pointer"} color={"blue.400"}>
+                  Login
+                </Link>
+              </Text>
+            </Stack>
           </Box>
         </Stack>
       ) : (
@@ -286,7 +368,6 @@ const RegisterScreen = () => {
                     onChange={(e) => setOtp(e.target.value)}
                   />
                 </FormControl>
-
                 <Stack spacing={10} pt={2}>
                   {isLoading && <Loader />}
                   <Button
@@ -314,6 +395,7 @@ const RegisterScreen = () => {
           </Box>
         </Stack>
       )}
+      <ToastContainer />
     </Flex>
   );
 };

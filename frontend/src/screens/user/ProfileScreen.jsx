@@ -34,7 +34,7 @@ export default function UserProfileEdit() {
   const [phoneNumber, setphoneNumber] = useState("");
   const [bio, setBio] = useState("");
   const [image, setImage] = useState("");
-  const [data, setData] = useState([]);
+
 
   const [profileUpdate] = useUpdateUserMutation();
 
@@ -69,16 +69,18 @@ export default function UserProfileEdit() {
       if (!name.trim() || !phoneNumber.trim()) {
         toast.error("Please enter all fields");
       } else {
-        var photo = image.name;
-        console.log(photo, "photo");
+    
         try {
-          const res = await profileUpdate({
-            _id: userInfo._id,
-            name,
-            phoneNumber,
-            bio,
-            photo,
-          }).unwrap();
+   
+          const formData = new FormData();
+
+          formData.append("filed", image);
+          formData.append("_id", userInfo._id);
+          formData.append("phoneNumber", phoneNumber);
+          formData.append("name", name);
+          formData.append("bio",bio);
+          
+          const res = await profileUpdate(formData).unwrap();
           dispatch(setCredentials(res));
           toast.success("Profile updated successfully");
         } catch (err) {

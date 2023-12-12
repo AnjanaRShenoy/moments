@@ -16,6 +16,7 @@ import {
   likePost, 
   reportPost,
   checkUserBlocked,
+  getFullProfile
 } from "../controllers/userController.js";
 import { auth } from "../middleware/authMiddleware.js";
 import { upload } from "../config/multer.js";
@@ -38,9 +39,9 @@ router.post("/comment",auth, comment)
 
 router.get("/profile", auth, profile)
 
-router.put("/updateProfile",auth, upload.single("filed"),updateUserProfile);
+router.post("/updateProfile", upload.single("filed"),updateUserProfile);
 
-router.put("/profileUpdateImage",auth, upload.single("filed"), updateUserImage);
+// router.put("/profileUpdateImage",auth, upload.single("filed"), updateUserImage);
 
 router.post("/savePost",auth, savePost)
 
@@ -51,5 +52,7 @@ router.post("/likePost", auth,likePost)
 router.post("/reportPost",auth, reportPost)
 
 router.get("/checkUserBlocked", checkUserBlocked)
+
+router.get("/getFullProfile",auth, getFullProfile)
 
 export default router;

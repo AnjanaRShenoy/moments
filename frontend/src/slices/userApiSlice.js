@@ -71,8 +71,8 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/updateProfile`,
-        method: "PUT",
+        url: `/api/users/updateProfile`,
+        method: "POST",
         body: data,
       }),
     }),
@@ -115,10 +115,10 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
 
     getSavedPost: builder.query({
-      query: (data) => ({
-        url: `${USERS_URL}/savedPost`,
+      query: ({_id}) => ({
+        url: `${USERS_URL}/savedPost?_id=${_id}`,
         method: "GET",
-        body: data
+        
       })
     }),
 

@@ -184,35 +184,25 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User Logged Out" });
 });
 
-
-
-// to get the user profile for showing profile
-// const getUserProfile = asyncHandler(async (req, res) => {
-//   const user = {
-//     _id: req.user._id,
-//     name: req.user.name,
-//     email: req.user.email,
-
-//   };
-//   res.status(200).json(user);
-// });
-
 // to make changes in profile
 const updateUserProfile = asyncHandler(async (req, res) => {
-  console.log(req.body, "updateUser");
-  const user = await User.findById(req.body._id);
+
+  const user = await User.findOne({ _id: req.body._id });
+
   if (user) {
     user.name = req.body.name || user.name;
-    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+    User.phoneNumber = req.body.phoneNumber || user.phoneNumber;
     user.bio = req.body.bio || user.bio
-    user.profileImage= req.body.photo 
+    if (req.file) {
+      user.profileImage = req.file.filename
+    }
     const updatedUser = await user.save();
     res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       phoneNumber: updatedUser.phoneNumber,
       bio: updatedUser.bio,
-      profileImage:updatedUser.profileImage
+      profileImage: updatedUser.profileImage
     });
   } else {
     res.status(404);
@@ -336,10 +326,17 @@ const savePost = asyncHandler(async (req, res) => {
 
 const getSavedPost = asyncHandler(async (req, res) => {
   try {
-    const savedPost = await SavePost.find({ userId: req.query._id })
-      .populate("userId postId")
 
-    res.status(200).json(savedPost)
+    const user = await User.findById({ _id: req.query._id })
+    const savedPos = user.savedPost
+    var postsDetails = []
+
+    for (var i = 0; i < savedPos.length; i++) {
+      const post = await Post.findById({ _id: savedPos[i] })
+      postsDetails.push(post);
+    }
+
+    res.status(200).json(postsDetails)
   } catch (err) {
     console.log(err);
   }
@@ -413,6 +410,19 @@ const checkUserBlocked = asyncHandler(async (req, res) => {
   }
 })
 
+const getFullProfile = asyncHandler(async (req, res) => {
+  try {
+
+    const user = await User.find({ _id: req.query._id })
+    const post = await Post.find({ userId: req.query._id })
+    console.log(user, post, "keuuuuuuuuuuuu");
+    res.status(200).json({ user: user, post: post })
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+
 export {
   authUser,
   registerUser,
@@ -429,5 +439,6 @@ export {
   getSavedPost,
   likePost,
   reportPost,
-  checkUserBlocked
+  checkUserBlocked,
+  getFullProfile
 };

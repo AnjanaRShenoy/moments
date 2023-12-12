@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { Button, CardTitle } from "react-bootstrap";
 
 const AdminUserManagement = () => {
+  debugger
   const { data: users, error, refetch } = useListUsersQuery();
 
   const [block] = useBlockUserMutation();

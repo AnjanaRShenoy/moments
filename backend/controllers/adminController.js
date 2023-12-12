@@ -71,27 +71,7 @@ const blockUser = asyncHandler(async (req, res) => {
   }
 });
 
-const editUser = asyncHandler(async (req, res) => {
-  try {
-    const user = await User.findById(req.body._id);
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      const updatedUser = await user.save();
-      res.status(200).json({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-      });
-    } else {
-      res.status(404);
-      throw new Error("User not found");
-    }
-    res.status(200).json({ message: "hello world" });
-  } catch (error) {
-    console.log(error.message);
-  }
-});
+
 
 const getUser = asyncHandler(async (req, res) => {
   try {
@@ -111,19 +91,18 @@ const getPost = asyncHandler(async (req, res) => {
           report: { $exists: true },
           $expr: { $gte: [{ $size: "$report" }, 5] }
         }
-      },{
-        $lookup:{
-          from:"users",
-          localField:"userId",
-          foreignField:'_id',
-          as:"userData"
+      }, {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: '_id',
+          as: "userData"
         }
       }
-
     ])
-  
+    console.log(post,'oeoeoeoeoeooooooooooooooo');
 
-    res.status(200).json({post})
+    res.status(200).json( post )
   } catch (err) {
     console.log(err);
   }
@@ -148,7 +127,7 @@ export {
   listUsers,
   searchUsers,
   blockUser,
-  editUser,
+
   getUser,
   deletePost,
   getPost

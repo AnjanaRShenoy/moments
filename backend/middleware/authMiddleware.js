@@ -2,11 +2,13 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 
-const auth = asyncHandler(async (req, res, next) => {
+const 
+auth = asyncHandler(async (req, res, next) => {
   let token;
 
   token = req.cookies.jwt;
   console.log(token, 'token')
+  console.log(req.cookies,"cookie");
 
   if (token) {
     try {

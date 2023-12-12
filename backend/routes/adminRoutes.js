@@ -4,7 +4,7 @@ import {
     listUsers,
     searchUsers,
     blockUser,
-    editUser,
+
     getUser,
     deletePost,
     getPost
@@ -22,7 +22,7 @@ router.post("/get-user", getUser);
 
 router.post("/blockUser", blockUser);
 
-router.post("/edit-user", editUser);
+
 
 router.post("/deletePost", deletePost)
 
