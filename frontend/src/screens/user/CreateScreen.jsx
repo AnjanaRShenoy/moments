@@ -6,6 +6,9 @@ import {
   ModalFooter,
   ModalCloseButton,
   Button,
+  Stack,
+  Input,
+  Textarea,
 } from "@chakra-ui/react";
 import { Image } from "react-bootstrap";
 import { useDisclosure } from "@chakra-ui/react";
@@ -20,6 +23,7 @@ const CreateScreen = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [image, setImage] = useState();
+  const [caption, setCaption] = useState();
 
   const { userInfo } = useSelector((state) => state.auth); //fetching userInfo from store
 
@@ -35,16 +39,18 @@ const CreateScreen = () => {
 
   const postImage = async () => {
     //to post the image
-
+    console.log("entered");
     try {
+      onClose()
       const formData = new FormData();
-
+      formData.append("caption", caption);
       formData.append("filed", image);
       formData.append("userInfo", JSON.stringify(userInfo));
-
+      console.log(formData, "form");
       const res = await post(formData).unwrap();
+      
       toast.success("Successfully uploaded the post");
-      navigate("/");
+      navigate("/fullProfile");
     } catch (err) {
       console.log(err);
     }
@@ -73,16 +79,18 @@ const CreateScreen = () => {
           >
             Create new post
           </ModalHeader>
+
           <Image
             src={
               image
                 ? URL.createObjectURL(image)
                 : "https://www.techsmith.com/blog/wp-content/uploads/2022/03/resize-image.png"
             }
+            style={{ width: "500px", height: "350px", objectFit: "cover" }}
             alt=""
           />
           <ModalCloseButton />
-          <Flex height="10vh" align="end" justify="center">
+          <Flex align="end" justify="center">
             {image ? (
               <>
                 <input
@@ -94,13 +102,27 @@ const CreateScreen = () => {
                     postImage(e);
                   }}
                 />
-                <Button
-                  colorScheme="blue"
-                  style={{ width: "180px" }}
-                  onClick={postImage}
+                <Flex
+                  direction="column"
+                  alignItems="center"
+                  gap="12px"
+                  marginTop="10px"
                 >
-                  Next
-                </Button>
+                  <Textarea
+                    placeholder="Write something"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    style={{ width: "425px" }}
+                  />
+
+                  <Button
+                    colorScheme="blue"
+                    style={{ width: "180px" }}
+                    onClick={postImage }
+                  >
+                    Next
+                  </Button>
+                </Flex>
               </>
             ) : (
               <>
@@ -113,13 +135,16 @@ const CreateScreen = () => {
                     handleFileChange(e);
                   }}
                 />
-                <Button
-                  colorScheme="blue"
-                  style={{ width: "180px" }}
-                  onClick={fileUpload}
-                >
-                  Select from device
-                </Button>
+
+                <div>
+                  <Button
+                    colorScheme="blue"
+                    style={{ width: "180px" }}
+                    onClick={fileUpload}
+                  >
+                    Select from device
+                  </Button>
+                </div>
               </>
             )}
           </Flex>

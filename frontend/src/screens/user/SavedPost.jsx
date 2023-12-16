@@ -12,20 +12,13 @@ const SavedPostScreen = () => {
     error,
     refetch,
   } = useGetSavedPostQuery({ _id: userInfo._id });
+ 
   const [data, setData] = useState([]);
-  debugger;
-  // useEffect(() => {
 
-  //     const fetchData = async () => {
-  //       try {
-  //         await refetch();
-  //         setData(savedPost);
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //     };
-  //     fetchData();
-  //   }, [refetch, data]);
+  useEffect(()=>{
+    refetch()
+  },[refetch])
+  
   return (
     <div>
       <h4 style={{color:"white"}}>Saved Posts</h4>

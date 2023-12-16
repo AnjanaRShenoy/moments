@@ -4,7 +4,11 @@ import { Form } from "react-bootstrap";
 import Loader from "../../components/mutualComponents/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useRegisterMutation, useOtpMutation } from "../../slices/userApiSlice";
+import {
+  useRegisterMutation,
+  useOtpMutation,
+  useResendOtpMutation,
+} from "../../slices/userApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
@@ -34,9 +38,13 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [otppage, setOtppage] = useState(false);
+  const [resendTimer, setResendTimer] = useState(null);
+  const [otpname, setOtpname] = useState("");
+  const [otpemail, setOtpemail] = useState("");
+  const [otppass, setOtppass] = useState("");
+  const [otpno, setOtpno] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -44,6 +52,7 @@ const RegisterScreen = () => {
 
   const [register, { isLoading }] = useRegisterMutation();
   const [Otp, { isRounding }] = useOtpMutation();
+  const [resend] = useResendOtpMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -52,33 +61,40 @@ const RegisterScreen = () => {
     debugger;
 
     const { name, email, phoneNumber, password, confirmPassword } = values;
-   
-  
-      try {
-        const res = await register({
-          //response brought from backend
-          name,
-          email,
-          phoneNumber,
-          password,
-        }).unwrap();
-        setOtppage(true); //to bring the otp page
-      } catch (err) {
-        Toast({
-          title: err?.data?.message || err.error,
-          status: "error",
-          isClosable: true,
-        });
-      }
-    
-  };
-  const resendOtp = async (e) => {
+    setOtpname(name),
+      setOtpemail(email),
+      setOtpno(phoneNumber),
+      setOtppass(password);
     try {
       const res = await register({
+        //response brought from backend
         name,
         email,
         phoneNumber,
         password,
+      }).unwrap();
+      setOtppage(true); //to bring the otp page
+    } catch (err) {
+      Toast({
+        title: err?.data?.message || err.error,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+  const resendOtp = async (e) => {
+    debugger;
+    setResendTimer(
+      setTimeout(() => {
+        setResendTimer(null);
+      }, 10 * 1000)
+    );
+    try {
+      const res = await resend({
+        otpname,
+        otpemail,
+        otpno,
+        otppass,
       }).unwrap();
     } catch {
       toast({
@@ -88,6 +104,14 @@ const RegisterScreen = () => {
       });
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (resendTimer) {
+        clearTimeout(resendTimer);
+      }
+    };
+  }, [resendTimer]);
 
   const submitOtpHandler = async (e) => {
     e.preventDefault();
@@ -312,6 +336,7 @@ const RegisterScreen = () => {
                       _hover={{
                         bg: "blue.500",
                       }}
+                      width={"250px"}
                       align={"center"}
                       justify={"center"}
                     >
@@ -321,8 +346,15 @@ const RegisterScreen = () => {
                 </form>
               )}
             </Formik>
+            <br />
+            <br />
+
             <div style={{ borderTop: "0.5px solid #000", width: "100%" }}></div>
+            <br />
+            <br />
+
             <h6 style={{ textAlign: "center" }}>Or Signup with</h6>
+            <br />
             <GoogleOAuthProvider clientId="491369151018-90df2bi9i480ivns1lmojepi9p2r9vg1.apps.googleusercontent.com">
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
@@ -384,8 +416,9 @@ const RegisterScreen = () => {
                   </Button>
                   <Link
                     onClick={resendOtp}
-                    cursor={"cursor"}
+                    cursor={resendTimer ? "not-allowed" : "pointer"}
                     color={"blue.400"}
+                    isDisabled={!!resendTimer}
                   >
                     Resend Otp
                   </Link>

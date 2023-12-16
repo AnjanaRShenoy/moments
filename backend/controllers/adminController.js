@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
+import Comment from "../models/commentModel.js";
 
 //admin to login
 const authAdmin = asyncHandler(async (req, res) => {
@@ -100,9 +101,9 @@ const getPost = asyncHandler(async (req, res) => {
         }
       }
     ])
-    console.log(post,'oeoeoeoeoeooooooooooooooo');
 
-    res.status(200).json( post )
+
+    res.status(200).json(post)
   } catch (err) {
     console.log(err);
   }
@@ -112,6 +113,7 @@ const deletePost = asyncHandler(async (req, res) => {
   try {
 
     await Post.findByIdAndDelete({ _id: req.body.postId });
+    await Comment.deleteMany({ postId: req.body.postId })
     res
       .status(200)
       .json({ message: "User Profile Deleted Successfully", task: true });
@@ -120,6 +122,55 @@ const deletePost = asyncHandler(async (req, res) => {
   }
 })
 
+const getComment = asyncHandler(async (req, res) => {
+  try {
+
+    const comment = await Comment.aggregate([
+      {
+        $match: {
+          report: { $exists: true },
+          $expr: { $gte: [{ $size: "$report" }, 5] }
+        }
+      }, {
+        $lookup: {
+          from: "posts",
+          localField: "postId",
+          foreignField: '_id',
+          as: "postData"
+        }
+      },{
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: '_id',
+          as: "userData"
+        }
+      }, {
+        $unwind: "$postData"
+      }, {
+        $unwind: "$userData"
+      }
+    ])
+    console.log(comment, "commme");
+
+    res.status(200).json(comment)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const deleteComment=asyncHandler(async(req,res)=>{
+  try{
+ 
+    await Comment.findByIdAndDelete({ _id: req.query._id });
+   
+    res
+      .status(200)
+      .json({ message: "User Profile Deleted Successfully", task: true });
+  }catch(err){
+    console.log(err);
+  }
+})
 
 
 export {
@@ -127,9 +178,10 @@ export {
   listUsers,
   searchUsers,
   blockUser,
-
   getUser,
   deletePost,
-  getPost
+  getPost,
+  getComment,
+  deleteComment
 };
 

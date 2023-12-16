@@ -5,11 +5,10 @@ import Otp from "../models/otpModel.js";
 import nodemailer from 'nodemailer';
 import Post from "../models/postModel.js";
 import Comment from "../models/commentModel.js";
-import SavePost from "../models/savePostModel.js";
+import Follow from "../models/followModel.js"
+import Notification from "../models/notificationModel.js";
 
 import { APP_PASSWORD, ADMIN_EMAIL } from "../config/connections.js";
-
-
 
 // to login the user
 const authUser = asyncHandler(async (req, res) => {
@@ -124,18 +123,12 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new Error("User already exist");
     }
 
-    const otpExist = await Otp.findOne({ email: req.body.email });
+
     const otp = Math.floor(1000 + Math.random() * 9000)
-    if (otpExist) {
-      const resendOTP = await Otp.findOneAndDelete({ email: req.body.email })
 
-      sendVerifyMail(req.body.name, req.body.email, otp)
 
-      res.status(200).json({ message: "Otp sent" })
-    } else {
+    sendVerifyMail(req.body.name, req.body.email, otp)
 
-      sendVerifyMail(req.body.name, req.body.email, otp)
-    }
 
     const user = await Otp.create({                       //saving the user data in otp collection
       name,
@@ -151,6 +144,32 @@ const registerUser = asyncHandler(async (req, res) => {
 
   }
 });
+
+const resendOtp = asyncHandler(async (req, res) => {
+  try {
+    const { otpname, otpemail, otpno, otppass } = req.body;
+
+    const otpExist = await Otp.findOne({ email: req.body.otpemail });
+    const otp = Math.floor(1000 + Math.random() * 9000)
+
+    const resendOTP = await Otp.findOneAndDelete({ email: req.body.otpemail })
+
+    sendVerifyMail(req.body.otpname, req.body.otpemail, otp)
+    const user = await Otp.create({                       //saving the user data in otp collection
+      name: otpname,
+      email: otpemail,
+      phoneNumber: otpno,
+      otp,
+      createdAt: Date.now(),
+
+    });
+
+    res.status(200).json({ message: "Otp sent" })
+
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 // to check the otp
 const checkOtp = asyncHandler(async (req, res) => {
@@ -237,7 +256,8 @@ const createPost = asyncHandler(async (req, res) => {
     if (req.file) {
       const post = await Post.create({
         userId: userId,
-        post: req.file.filename
+        post: req.file.filename,
+        caption: req.body.caption
       })
         .catch(err => {
           console.log(err.message);
@@ -252,16 +272,22 @@ const createPost = asyncHandler(async (req, res) => {
 // to show all the posts in home page
 const listPost = asyncHandler(async (req, res) => {
   try {
-    const posts = await Post.find()
+    const user = req.query._id
+
+    const posts = await Post.find({ userId: { $ne: user } })
       .populate("userId")
       .sort({ _id: -1 })                    //to retrieve the user name and details 
 
-    // const comments = await Comment.find()     //to retrieve the user and post details 
-    //   .populate("userId postId")
 
-    // const saved= await SavePost.find()
+    const comments = await Comment.find()     //to retrieve the user and post details 
+      .populate("userId")
 
-    res.status(200).json(posts)
+    const userData = await User.findOne({ _id: req.query._id })
+
+    const follow = await Follow.findOne({ userId: user })
+
+
+    res.status(200).json({ posts, comments, userData, follow })
   } catch (err) {
     console.log(err);
   }
@@ -277,6 +303,30 @@ const comment = asyncHandler(async (req, res) => {
       comment: req.body.comment,
       postId: req.body.postId
     })
+
+    const notification = await Notification.create({
+      type: "comment",
+      content: "has commented on your post",
+      resource: [{ postId: req.body.postId }],
+      sender: userInfo._id,
+
+    })
+
+    const populatedNotification = await Notification.findById(notification._id).populate({
+      path: "resource.postId",
+      populate: {
+        path: "userId",
+        model: "User",
+      },
+    });
+
+    const receiverId = populatedNotification.resource[0].postId.userId._id;
+
+    await Notification.findByIdAndUpdate(
+      populatedNotification._id,
+      { receiver: receiverId },
+      { new: true }
+    );
     res.status(200).json(comment)
   } catch (err) {
     console.log(err);
@@ -308,13 +358,13 @@ const savePost = asyncHandler(async (req, res) => {
     if (postExist) {
       const unSave = await User.findOneAndUpdate(
         { _id: userInfo._id },
-        { $pull: { savedPost: [postId] } },
+        { $pull: { savedPost: postId } },
         { new: true })
       res.status(200).json({ message: "Post has been unsaved" })
     } else {
       const savePost = await User.findOneAndUpdate(
         { _id: userInfo._id },
-        { $push: { savedPost: [postId] } },
+        { $push: { savedPost: postId } },
         { upsert: true, new: true }
       )
       res.status(200).json({ message: "Post has been saved" })
@@ -365,7 +415,17 @@ const likePost = asyncHandler(async (req, res) => {
         { _id: postId },
         { $push: { like: { userId: userInfo._id } } },
         { upsert: true, new: true }
+
       )
+      const notification = await Notification.create({
+
+        type: "like",
+        content: "has liked you post",
+        resource: [postsDetails],
+        sender: userInfo,
+        // receiver: user._id
+      })
+
       res.status(200).json({ message: "Post has been liked" })
     }
   } catch (err) {
@@ -415,18 +475,134 @@ const getFullProfile = asyncHandler(async (req, res) => {
 
     const user = await User.find({ _id: req.query._id })
     const post = await Post.find({ userId: req.query._id })
-    console.log(user, post, "keuuuuuuuuuuuu");
-    res.status(200).json({ user: user, post: post })
+      .sort({ _id: -1 })
+    const postCount = post.length
+
+    const followCount = await Follow.findOne({ userId: req.query._id })
+    const followers = followCount.follower.length
+    const followings = followCount.following.length
+
+    res.status(200).json({ user: user, post: post, postCount, followers, followings })
   } catch (err) {
     console.log(err);
   }
 })
 
+const follow = asyncHandler(async (req, res) => {
+  try {
+    const user = req.body.userId
+
+    const userInfo = req.body.userInfo._id
+
+    const userExist = await Follow.findOne({ userId: userInfo })
+    if (!userExist) {
+      const createUser = await Follow.create({ userId: userInfo })
+    }
+
+    const followerExist = await Follow.findOne({ userId: user._id })
+    if (!followerExist) {
+      const createFollower = await Follow.create({ userId: user._id })
+    }
+
+    const follow = await Follow.findOne({
+      userId: userInfo,
+      following: { $in: user._id }
+    });
+
+    if (follow) {
+      const unfollow = await Follow.findOneAndUpdate(
+        { userId: userInfo },
+        { $pull: { following: user._id } },
+        { new: true })
+      const unfollower = await Follow.findOneAndUpdate(
+        { userId: user._id },
+        { $pull: { follower: userInfo } },
+        { new: true })
+      res.status(200).json({ message: "Unfollowed successfully" })
+    } else {
+
+      const follow = await Follow.findOneAndUpdate(
+        { userId: userInfo },
+        { $push: { following: user._id } },
+        { new: true })
+      const follower = await Follow.findOneAndUpdate(
+        { userId: user._id },
+        { $push: { follower: userInfo } },
+        { new: true }
+      )
+      const notification = await Notification.create({
+        type: "follow",
+        content: "followed you",
+        // resource:[user._id],
+        sender: userInfo,
+        receiver: user._id
+      })
+      res.status(200).json({ message: "Followed successfully" })
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const userProfile = asyncHandler(async (req, res) => {
+  try {
+
+    const user = await User.find({ _id: req.query._id })
+    const post = await Post.find({ userId: req.query._id })
+    const postCount = post.length
+
+    const followCount = await Follow.findOne({ userId: req.query._id })
+    const followers = followCount.follower.length
+    const followings = followCount.following.length
+
+    res.status(200).json({ user: user, post: post, postCount, followers, followings })
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const reportComment = asyncHandler(async (req, res) => {
+  try {
+
+    const { commentId, userInfo } = req.body
+
+    const comment = await Comment.findOne({ _id: commentId })
+    const alreadyReported = comment.report.includes(userInfo._id)
+    if (alreadyReported) {
+      res.status(200).json({ message: "You have reported the post" })
+    } else {
+      const comment = await Comment.findByIdAndUpdate(
+        { _id: commentId },
+        { $push: { report: userInfo._id } },
+        { upsert: true, new: true }
+      );
+
+      res.status(200).json({ message: "You have reported the post" })
+    }
+  }
+  // await comment.save()
+  catch (err) {
+    console.log(err);
+  }
+})
+
+const getNotification = asyncHandler(async (req, res) => {
+  try {
+    const notification = await Notification.find({ receiver: req.query._id })
+      .populate("sender")
+
+    res.status(200).json(notification)
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 export {
   authUser,
   registerUser,
   logoutUser,
+  resendOtp,
   // getUserProfile,
   updateUserProfile,
   updateUserImage,
@@ -440,5 +616,9 @@ export {
   likePost,
   reportPost,
   checkUserBlocked,
-  getFullProfile
+  getFullProfile,
+  follow,
+  userProfile,
+  reportComment,
+  getNotification,
 };

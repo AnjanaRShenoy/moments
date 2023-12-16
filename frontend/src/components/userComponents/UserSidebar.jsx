@@ -36,11 +36,9 @@ const LinkItems = [
   { name: "Home", icon: FiHome, url: "/" },
   { name: "Profile", icon: CgProfile, url: "/fullProfile" }, 
   { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
-  { name: "Followers", icon: GiShadowFollower},
-  { name: "Followings", icon: GiShadowFollower },
   { name: "Messages", icon: TiMessages },
-  { name: "Notifications", icon: IoIosNotificationsOutline },
-  { name: "Settings", icon: FiSettings },
+  { name: "Notifications", icon: IoIosNotificationsOutline, url:"/notification" },
+
 ];
 
 export default function UserSidebar() {

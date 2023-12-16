@@ -8,7 +8,8 @@ const postSchema = mongoose.Schema(
             required:true
         },
         caption: {
-            type: String
+            type: String,
+            default:""
         },
         post: {
             type: String,

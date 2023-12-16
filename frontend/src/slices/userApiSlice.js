@@ -25,6 +25,14 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    resendOtp: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/resendOtp`,
+        method: "POST",
+        body: data,
+      })
+    }),
+
     otp: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/checkOtp`,
@@ -44,10 +52,10 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
     // to list the posts in homepage
     listPost: builder.query({
-      query: (data) => ({
-        url: `${USERS_URL}/listPost`,
+      query: ({ _id }) => ({
+        url: `${USERS_URL}/listPost?_id=${_id}`,
         method: "GET",
-        body: data
+
       })
     }),
 
@@ -103,8 +111,15 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data,
       })
     }),
+    reportComment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/reportComment`,
+        method: "POST",
+        body: data,
+      })
+    }),
 
-
+    
     savePost: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/savePost`,
@@ -115,10 +130,10 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
 
     getSavedPost: builder.query({
-      query: ({_id}) => ({
+      query: ({ _id }) => ({
         url: `${USERS_URL}/savedPost?_id=${_id}`,
         method: "GET",
-        
+
       })
     }),
 
@@ -128,8 +143,17 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/checkUserBlocked?_id=${_id}`,
         method: "GET"
       })
-    })
+    }),
 
+    follow: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/follow`,
+        method: "POST",
+        body: data
+      })
+    }),
+
+    
   }),
 });
 
@@ -137,6 +161,7 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
+  useResendOtpMutation,
   useOtpMutation,
   usePostMutation,
   useListPostQuery,
@@ -146,7 +171,11 @@ export const {
   useUpdateProfileImageMutation,
   useLikePostMutation,
   useReportPostMutation,
+  useReportCommentMutation,
   useSavePostMutation,
   useGetSavedPostQuery,
   useCheckUserBlockedQuery,
+  useFollowMutation,
+
+  
 } = userAdminApiSlice;

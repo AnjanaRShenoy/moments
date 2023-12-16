@@ -21,6 +21,7 @@ import CreateScreen from "./screens/user/CreateScreen.jsx";
 import PrivateRoute from "./components/userComponents/PrivateRoute.jsx";
 import SavedPostScreen from "./screens/user/SavedPost.jsx";
 import FullProfile from "./screens/user/FullProfile.jsx";
+import UserProfile from "./screens/user/UserProfile.jsx";
 
 import PrivateRouteAdmin from "./components/adminComponents/PrivateRouteAdmin.jsx";
 import LoginAdmin from "./screens/admin/LoginAdmin.jsx";
@@ -29,7 +30,11 @@ import AdminCreateUser from "./screens/admin/AdminCreateUser.jsx";
 import AdminEditUser from "./screens/admin/AdminCreateUser.jsx";
 import AdminUserManagement from "./screens/admin/AdminUserManagement.jsx";
 import PostManagement from "./screens/admin/PostManagement.jsx";
+import CommentManagement from "./screens/admin/CommentManagement.jsx";
+import NotificationScreen from "./screens/user/NotificationScreen.jsx";
+
 import { ToastContainer } from "react-bootstrap";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,6 +50,8 @@ const router = createBrowserRouter(
           <Route path="/create" element={<CreateScreen />} />
           <Route path="/savedPost" element={<SavedPostScreen />} />
           <Route path="/fullProfile" element={<FullProfile />} />
+          <Route path="/userProfile/:profileId" element={<UserProfile />} />
+          <Route path="/notification" element={<NotificationScreen />} />
         </Route>
       </Route>
 
@@ -61,6 +68,10 @@ const router = createBrowserRouter(
             element={<AdminUserManagement />}
           />
           <Route path="/admin/postManagement" element={<PostManagement />} />
+          <Route
+            path="/admin/commentManagement"
+            element={<CommentManagement />}
+          />
         </Route>
       </Route>
     </>

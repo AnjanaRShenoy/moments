@@ -4,10 +4,10 @@ import {
     listUsers,
     searchUsers,
     blockUser,
-
-    getUser,
     deletePost,
-    getPost
+    getPost,
+    getComment,
+    deleteComment,
 } from "../controllers/adminController.js";
 const router = express.Router();
 import { auth } from "../middleware/authMiddleware.js";
@@ -18,15 +18,17 @@ router.get("/listUsers", listUsers);
 
 router.post("/search-users", searchUsers);
 
-router.post("/get-user", getUser);
+
 
 router.post("/blockUser", blockUser);
-
-
 
 router.post("/deletePost", deletePost)
 
 router.get("/getPost", getPost)
+
+router.get("/getComment", getComment)
+
+router.delete("/deleteComment", deleteComment)
 
 
 export default router;
