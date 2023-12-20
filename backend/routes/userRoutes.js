@@ -22,6 +22,9 @@ import {
   userProfile,
   reportComment,
   getNotification,
+  editComment,
+  deleteComment,
+  deletePost,
 
 } from "../controllers/userController.js";
 import { auth } from "../middleware/authMiddleware.js";
@@ -71,5 +74,11 @@ router.get(`/userProfile`, auth, userProfile)
 router.post(`/reportComment`, auth, reportComment)
 
 router.get('/getNotification', auth, getNotification)
+
+router.patch('/editComment', auth, editComment)
+
+router.delete('/deleteComment', auth, deleteComment)
+
+router.delete('/deletePost', auth, deletePost)
 
 export default router;

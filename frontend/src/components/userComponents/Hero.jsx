@@ -31,7 +31,7 @@ import {
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { HiDotsVertical } from "react-icons/hi";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   useLikePostMutation,
@@ -41,6 +41,8 @@ import {
   useCommentMutation,
   useFollowMutation,
   useReportCommentMutation,
+  useEditCommentMutation,
+  useDeleteCommentMutation,
 } from "../../slices/userApiSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -95,17 +97,6 @@ const Hero = () => {
       console.log(posts.follow);
     }
   }, [posts]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await refetch();
-  //       setData(posts);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [refetch, data]);
 
   useEffect(() => {
     refetch();
@@ -157,9 +148,18 @@ const Hero = () => {
     }
   };
 
+  // const [editComment] = useEditCommentMutation();
+  // const commentEditHandler = async (commentId) => {
+  //   try {
+  //     const res = await editComment({ commentId }).unwrap();
+  //     refetch();
+  //     console.log(res, "rescomment");
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
   const commentReportHandler = async (commentId) => {
     try {
-      console.log({ commentId, userInfo });
       const res = await reportComment({ commentId, userInfo }).unwrap();
       refetch();
       toast.success("Reported successfully");
@@ -167,6 +167,20 @@ const Hero = () => {
       console.log(err);
     }
   };
+
+  const [deleteComment] = useDeleteCommentMutation();
+  const commentDeleteHandler = async (commentId) => {
+    debugger
+    try {
+      const res = await deleteComment({ commentId }).unwrap();
+    
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
 
   const followUser = async (userId) => {
     try {
@@ -335,15 +349,7 @@ const Hero = () => {
                 )}
               </Box>
             </CardBody>
-            {/* <CardFooter
-              justify="space-between"
-              flexWrap="wrap"
-              sx={{
-                "& > button": {
-                  minW: "136px",
-                },
-              }}
-            ></CardFooter> */}
+
             <Flex>
               <Input
                 id="comment"
@@ -355,7 +361,6 @@ const Hero = () => {
                 placeholder="Enter your comment"
                 width="80%"
                 marginLeft="15px"
-                
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
@@ -417,13 +422,28 @@ const Hero = () => {
                             aria-label="See menu"
                             icon={<HiDotsVertical />}
                           />
-                          <MenuList>
-                            <MenuItem
-                              onClick={() => commentReportHandler(commen._id)}
-                            >
-                              Report
-                            </MenuItem>
-                          </MenuList>
+                          {commen.userId._id === userInfo._id ? (
+                            <MenuList>
+                              {/* <MenuItem
+                                onClick={() => commentEditHandler(commen._id)}
+                              >
+                                Edit
+                              </MenuItem> */}
+                              <MenuItem
+                                onClick={() => commentDeleteHandler(commen._id)}
+                              >
+                                Delete
+                              </MenuItem>
+                            </MenuList>
+                          ) : (
+                            <MenuList>
+                              <MenuItem
+                                onClick={() => commentReportHandler(commen._id)}
+                              >
+                                Report
+                              </MenuItem>
+                            </MenuList>
+                          )}
                         </Menu>
                       </Flex>
                     </div>
@@ -460,7 +480,7 @@ const Hero = () => {
                   </MDBModalHeader>
                   <MDBModalBody>
                     <Image
-                      style={{ height: "400px", margin: "0 10px" }}
+                      style={{ height: "400px", width: "100%", margin: "0" }}
                       objectFit="cover"
                       borderRadius="10px"
                       src={`../../../${filteredPost.post}`}
@@ -537,15 +557,34 @@ const Hero = () => {
                                     aria-label="See menu"
                                     icon={<HiDotsVertical />}
                                   />
-                                  <MenuList>
-                                    <MenuItem
-                                      onClick={() =>
-                                        commentReportHandler(commen._id)
-                                      }
-                                    >
-                                      Report
-                                    </MenuItem>
-                                  </MenuList>
+                                  {commen.userId._id === userInfo._id ? (
+                                    <MenuList>
+                                      <MenuItem
+                                        onClick={() =>
+                                          commentEditHandler(commen._id)
+                                        }
+                                      >
+                                        Edit
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          commentDeleteHandler(commen._id)
+                                        }
+                                      >
+                                        Delete
+                                      </MenuItem>
+                                    </MenuList>
+                                  ) : (
+                                    <MenuList>
+                                      <MenuItem
+                                        onClick={() =>
+                                          commentReportHandler(commen._id)
+                                        }
+                                      >
+                                        Report
+                                      </MenuItem>
+                                    </MenuList>
+                                  )}
                                 </Menu>
                               </Flex>
                             </div>

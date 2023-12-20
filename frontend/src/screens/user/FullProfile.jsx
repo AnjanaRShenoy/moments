@@ -16,6 +16,12 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalFooter,
 } from "@chakra-ui/react";
 import {
   MDBCol,
@@ -35,15 +41,22 @@ import {
   MDBModalBody,
   MDBModalFooter,
 } from "mdb-react-ui-kit";
-
+import { FaTrashAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
-
+import { HiDotsVertical } from "react-icons/hi";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useCommentMutation } from "../../slices/userApiSlice";
-
+import {
+  useCommentMutation,
+  useDeleteCommentMutation,
+  useDeletePostMutation,
+  useReportCommentMutation,
+} from "../../slices/userApiSlice";
+import { toast } from "react-toastify";
+import { useDisclosure } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const FullProfile = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -55,9 +68,12 @@ const FullProfile = () => {
   const [postCount, setPostCount] = useState();
   const [selectedPost, setSelectedPost] = useState("");
   const [centredModal, setCentredModal] = useState(false);
+  const [deletePost, setDeletePost] = useState("");
   const [comment, setComment] = useState(" ");
   const [commentData, setCommentData] = useState("");
   const [postComment] = useCommentMutation();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
   const fetchData = async () => {
     try {
       const response = await axios.get(`/api/users/getFullProfile?_id=${_id}`);
@@ -67,6 +83,7 @@ const FullProfile = () => {
       setFollowers(response.data.followers);
       setFollowings(response.data.followings);
       setPostCount(response.data.postCount);
+      setCommentData(response.data.comments);
     } catch (err) {
       console.error(err);
     }
@@ -83,11 +100,45 @@ const FullProfile = () => {
 
   const submitComment = async (postId) => {
     try {
+      debugger;
       if (comment.trim()) {
         const res = await postComment({ comment, userInfo, postId }).unwrap();
         setComment("");
-        refetch();
+        fetchData();
       }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [deleteComment] = useDeleteCommentMutation();
+  const commentDeleteHandler = async (commentId) => {
+    debugger;
+    try {
+      const res = await deleteComment({ commentId }).unwrap();
+      fetchData();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [reportComment] = useReportCommentMutation();
+  const commentReportHandler = async (commentId) => {
+    try {
+      debugger;
+      const res = await reportComment({ commentId, userInfo }).unwrap();
+      fetchData();
+      toast.success("Reported successfully");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const [removePos] = useDeletePostMutation();
+  const removePost = async (postId) => {
+    try {
+      const res = await removePos({ postId }).unwrap();
+      fetchData();
+      toast.success("Removed the post successfully")
     } catch (err) {
       console.log(err);
     }
@@ -205,38 +256,6 @@ const FullProfile = () => {
                     <div style={{ width: "180px" }}></div>
                     <div style={{ width: "180px" }}></div>
                   </div>
-
-                  {/* <MDBRow
-                    style={{
-                      margin: "0 auto",
-                      minHeight: "400px",
-                    }}
-                  >
-                    {post.length > 0 ? (
-                      post.map((post) => (
-                        <MDBCol
-                          className="mb-2"
-                          style={{ minHeight: "150px", minWidth: "150px" }}
-                        >
-                          <MDBCardImage
-                            src={`../../../${post.post}`}
-                            alt="image 1"
-                            className="w-100 rounded-3"
-                            onClick={() => toggleOpen(post._id)}
-                            style={{
-                              objectFit: "cover",
-                              minHeight: "180px",
-                              minWidth: "180px",
-                              maxHeight: "180px",
-                              maxWidth: "180px",
-                            }}
-                          />
-                        </MDBCol>
-                      ))
-                    ) : (
-                      <div>No Posts</div>
-                    )}
-                  </MDBRow> */}
                 </MDBCardBody>
               </MDBCard>
             ) : (
@@ -257,6 +276,16 @@ const FullProfile = () => {
                       <MDBModalTitle size="sm">
                         {filteredPost.userId.name}
                       </MDBModalTitle>
+                      <Button
+                        as={IconButton}
+                        variant="ghost"
+                        colorScheme="white"
+                        aria-label="See menu"
+                        icon={<FaTrashAlt />}
+                        onClick={() => {
+                          setDeletePost(filteredPost._id), onOpen();
+                        }}
+                      />
                       <MDBBtn
                         className="btn-close"
                         color="none"
@@ -266,24 +295,28 @@ const FullProfile = () => {
                     <MDBModalBody>
                       <Flex>
                         <Image
-                          style={{ height: "400px", margin: "0 10px" }}
+                          style={{
+                            height: "400px",
+                            width: "100%",
+                            margin: "0",
+                          }}
                           objectFit="cover"
                           borderRadius="10px"
                           src={`../../../${filteredPost.post}`}
                         />
                       </Flex>
                     </MDBModalBody>
-                    <MDBModalFooter>
+                    <MDBModalFooter style={{ flexDirection: "column" }}>
                       <Flex>
                         <Input
                           id="comment"
                           bg="white"
-                          w="100%"
+                          w={96}
                           p={4}
                           color="black"
                           borderWidth="1px"
                           placeholder="Enter your comment"
-                          width="80%"
+                          value={comment}
                           marginLeft="15px"
                           onChange={(e) => setComment(e.target.value)}
                         />
@@ -298,46 +331,82 @@ const FullProfile = () => {
                           Post
                         </Button>
                       </Flex>
-                      <Text style={{ marginTop: "10px", marginBottom: "15px" }}>
-                        {comment.text}
-                      </Text>
+                      <Flex>
+                        {commentData &&
+                        commentData.filter(
+                          (commen) => commen.postId === filteredPost._id
+                        ).length > 0 ? (
+                          <div style={{ marginBottom: "15px" }}>
+                            {commentData
+                              .filter(
+                                (commen) => commen.postId === filteredPost._id
+                              )
 
-                      {commentData &&
-                      commentData.filter(
-                        (commen) => commen.postId === filteredPost._id
-                      ).length > 0 ? (
-                        <div style={{ marginBottom: "15px" }}>
-                          {commentData
-                            .filter(
-                              (commen) => commen.postId === filteredPost._id
-                            )
-
-                            .map((commen) => (
-                              <div key={commen._id}>
-                                <Flex>
-                                  <div
+                              .map((commen) => (
+                                <div key={commen._id}>
+                                  <Flex
+                                    w={96}
                                     style={{
-                                      marginLeft: "20px",
-                                      fontSize: "15px",
-                                      fontWeight: "bold",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
                                     }}
                                   >
-                                    {commen.userId.name}
-                                  </div>
-                                  <div
-                                    style={{
-                                      marginLeft: "10px",
-                                      fontSize: "13px",
-                                      fontWeight: "normal",
-                                    }}
-                                  >
-                                    {commen.comment}
-                                  </div>
-                                </Flex>
-                              </div>
-                            ))}
-                        </div>
-                      ) : null}
+                                    <Flex style={{ alignItems: "baseline" }}>
+                                      <div
+                                        style={{
+                                          marginLeft: "20px",
+                                          fontSize: "15px",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {commen.userId.name}
+                                      </div>
+                                      <div
+                                        style={{
+                                          marginLeft: "10px",
+                                          fontSize: "13px",
+                                          fontWeight: "normal",
+                                        }}
+                                      >
+                                        {commen.comment}
+                                      </div>
+                                    </Flex>
+                                    <Menu>
+                                      <MenuButton
+                                        as={IconButton}
+                                        variant="ghost"
+                                        colorScheme="gray"
+                                        aria-label="See menu"
+                                        icon={<HiDotsVertical />}
+                                      />
+                                      {commen.userId._id === userInfo._id ? (
+                                        <MenuList>
+                                          <MenuItem
+                                            onClick={() =>
+                                              commentDeleteHandler(commen._id)
+                                            }
+                                          >
+                                            Delete
+                                          </MenuItem>
+                                        </MenuList>
+                                      ) : (
+                                        <MenuList>
+                                          <MenuItem
+                                            onClick={() =>
+                                              commentReportHandler(commen._id)
+                                            }
+                                          >
+                                            Report
+                                          </MenuItem>
+                                        </MenuList>
+                                      )}
+                                    </Menu>
+                                  </Flex>
+                                </div>
+                              ))}
+                          </div>
+                        ) : null}
+                      </Flex>
                     </MDBModalFooter>
                   </MDBModalContent>
                 </MDBModalDialog>
@@ -345,6 +414,31 @@ const FullProfile = () => {
             ))
         ) : (
           <div>null</div>
+        )}
+        {deletePost && (
+          <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                Are you sure you want to delete the post?
+              </ModalHeader>
+              <ModalCloseButton />
+
+              <ModalFooter>
+                <Button
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={() => {
+                    removePost(deletePost);
+                    onClose();
+                  }}
+                >
+                  Yes
+                </Button>
+                <Button onClick={onClose}>No</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         )}
       </MDBModal>
     </div>

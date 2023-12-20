@@ -43,7 +43,9 @@ const CreateScreen = () => {
     try {
       onClose()
       const formData = new FormData();
-      formData.append("caption", caption);
+      if (caption) {
+        formData.append("caption", caption);
+    }
       formData.append("filed", image);
       formData.append("userInfo", JSON.stringify(userInfo));
       console.log(formData, "form");

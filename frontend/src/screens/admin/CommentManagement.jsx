@@ -36,6 +36,7 @@ const CommentManagement = () => {
       const res = await axios.get("/api/admin/getComment");
       setPosts(res.data);
       console.log(res.data);
+      
     } catch (err) {
       console.log(err);
     }
@@ -50,7 +51,7 @@ const CommentManagement = () => {
  
       
       const res = await axios.delete(`/api/admin/deleteComment?_id=${commentId}`);
-     
+     fetchData()
     } catch (err) {
       console.log(err);
     }

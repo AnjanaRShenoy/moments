@@ -21,6 +21,7 @@ const SavedPostScreen = () => {
   
   return (
     <div>
+      
       <h4 style={{color:"white"}}>Saved Posts</h4>
       <div
         style={{

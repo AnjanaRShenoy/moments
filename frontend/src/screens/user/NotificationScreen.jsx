@@ -23,18 +23,17 @@ const NotificationScreen = () => {
 
   return (
     <div>
-      <Flex
-        backgroundColor="white"
-        borderColor="white"
-        width="700px"
-        paddingLeft="10px"
-        paddingTop="10px"
-        borderRadius="10px"
-      >
+      <Flex borderColor="white" width="700px"  direction="column" gap="20px">
         {notification ? (
           notification.map((notification) => (
             <div key={notification._id}>
-              <Flex>
+              <Flex
+                backgroundColor="white"
+                borderRadius="10px"
+                paddingLeft="10px"
+                paddingTop="10px"
+                height="70px"
+              >
                 <img
                   style={{
                     borderRadius: "50px",

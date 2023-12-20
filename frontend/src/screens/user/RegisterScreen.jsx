@@ -40,7 +40,8 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [otppage, setOtppage] = useState(false);
-  const [resendTimer, setResendTimer] = useState(null);
+  const t = 10;
+  const [resendTimer, setResendTimer] = useState(t);
   const [otpname, setOtpname] = useState("");
   const [otpemail, setOtpemail] = useState("");
   const [otppass, setOtppass] = useState("");
@@ -57,8 +58,8 @@ const RegisterScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const submitHandler = async (values) => {
-    //to submit the signup form, validate and send to back end
-    debugger;
+       debugger                                            //to submit the signup form, validate and send to back end
+    setResendTimer(t);
 
     const { name, email, phoneNumber, password, confirmPassword } = values;
     setOtpname(name),
@@ -83,12 +84,8 @@ const RegisterScreen = () => {
     }
   };
   const resendOtp = async (e) => {
-    debugger;
-    setResendTimer(
-      setTimeout(() => {
-        setResendTimer(null);
-      }, 10 * 1000)
-    );
+    setResendTimer(t);
+
     try {
       const res = await resend({
         otpname,
@@ -106,22 +103,29 @@ const RegisterScreen = () => {
   };
 
   useEffect(() => {
-    return () => {
-      if (resendTimer) {
-        clearTimeout(resendTimer);
+    const timerInterval = setInterval(() => {
+      if (resendTimer > 0) {
+        setResendTimer((prevTimer) => prevTimer - 1);
       }
+    }, 1000);
+
+    return () => {
+      clearInterval(timerInterval);
     };
   }, [resendTimer]);
 
   const submitOtpHandler = async (e) => {
+    debugger
     e.preventDefault();
+    
     try {
       const res = await Otp({
-        name,
-        phoneNumber,
-        password,
-        email,
-        otp,
+        otpname,
+        otpemail,
+        otpno,
+        otppass,
+        otp
+
       }).unwrap();
       navigate("/login");
     } catch (err) {
@@ -389,7 +393,7 @@ const RegisterScreen = () => {
             boxShadow={"lg"}
             p={8}
           >
-            <Form onSubmit={submitOtpHandler}>
+            <Form >
               <Stack spacing={4}>
                 <FormControl id="otp">
                   <FormLabel>OTP</FormLabel>
@@ -411,17 +415,24 @@ const RegisterScreen = () => {
                     _hover={{
                       bg: "blue.500",
                     }}
+                    onClick={submitOtpHandler }
+                    as={resendTimer ? "div" : "a"}
                   >
                     Submit
                   </Button>
-                  <Link
-                    onClick={resendOtp}
-                    cursor={resendTimer ? "not-allowed" : "pointer"}
-                    color={"blue.400"}
-                    isDisabled={!!resendTimer}
-                  >
-                    Resend Otp
-                  </Link>
+
+                  <div> { resendTimer > 0 ? `Resend OTP in ${resendTimer}`:( null)}
+                  {resendTimer <= 0 && (
+                    <Link
+                      onClick={resendOtp}
+                      cursor={"pointer"}
+                      color={"blue.400"}
+                  
+                    >
+                      Resend Otp
+                    </Link>
+                  )}
+                  </div>
                 </Stack>
               </Stack>
             </Form>

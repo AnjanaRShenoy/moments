@@ -32,12 +32,14 @@ import { useLogoutMutation } from "../../slices/userApiSlice";
 import { useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
 
+
 const LinkItems = [
   { name: "Home", icon: FiHome, url: "/" },
   { name: "Profile", icon: CgProfile, url: "/fullProfile" }, 
   { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
   { name: "Messages", icon: TiMessages },
   { name: "Notifications", icon: IoIosNotificationsOutline, url:"/notification" },
+
 
 ];
 
@@ -81,6 +83,11 @@ const SidebarContent = ({ onClose, ...rest }) => {
       console.log(err);
     }
   };
+
+
+  const handleCreate=()=>{
+    navigate(`/room/${Date.now()}`)
+  }
   return (
     <Box
       bg={useColorModeValue("white", "gray.900")}
@@ -93,7 +100,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <img
-          src="../../../images/Logo.png"
+          src="../../../images/Moments.png"
           alt=""
           style={{ backgroundColor: "black", height: "70px" }}
         />
@@ -110,6 +117,13 @@ const SidebarContent = ({ onClose, ...rest }) => {
           </Link>
         </NavItem>
       ))}
+      <Box>
+        <NavItem icon={RiLogoutCircleRLine} onClick={handleCreate}>
+          <Link >
+            Video Call
+          </Link>
+        </NavItem>
+      </Box>
       <Box>
         <NavItem icon={RiLogoutCircleRLine} onClick={logoutHandler}>
           <Link as={Link} to="/logout">

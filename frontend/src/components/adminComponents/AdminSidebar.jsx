@@ -26,7 +26,7 @@ const LinkItems = [
   { name: "User Management", icon: FaUsers, url: "/admin/userManagement" },
   { name: "Post management", icon: CiSignpostDuo1, url: "/admin/postManagement" },
   { name: "Comment Management", icon: FaRegComment, url: "/admin/commentManagement" },
-  { name: "Settings", icon: FiSettings, url: "/admin/" },
+  // { name: "Settings", icon: FiSettings, url: "/admin/" },
 ];
 
 export default function AdminSidebar() {

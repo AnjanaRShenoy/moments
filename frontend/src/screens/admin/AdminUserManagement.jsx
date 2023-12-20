@@ -14,25 +14,18 @@ import {
 } from "../../slices/adminApiSlice";
 import { useState, useEffect } from "react";
 import { Button, CardTitle } from "react-bootstrap";
+import Pagination from "../../components/mutualComponents/Pagination";
 
 const AdminUserManagement = () => {
-  debugger
   const { data: users, error, refetch } = useListUsersQuery();
 
   const [block] = useBlockUserMutation();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await refetch();
-  //       setData(users);
-  //       console.log(data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [refetch, data]);
+  const [totalUsers, setTotalUsers] = useState();
+  const [userDetail, setUserDetail] = useState();
+  const [startIndex, setStartIndex] = useState();
+  const [usersDetails, setUsersDetails] = useState();
+  const [endIndex, setEndIndex] = useState();
 
   const blockUser = async (userId, status) => {
     try {
@@ -42,15 +35,21 @@ const AdminUserManagement = () => {
       console.log(err);
     }
   };
-
+  useEffect(() => {
+    if (users) {
+      setTotalUsers(users.length);
+      setUsersDetails(users.slice(startIndex, endIndex));
+    }
+  }, [startIndex, endIndex, users, setUsersDetails]);
+  console.log(totalUsers, startIndex, endIndex);
   return (
     <Flex flexDirection={"column"}>
-      <CardTitle align={"center"} justify={"center"} style={{color:"white"}}>
+      <CardTitle align={"center"} justify={"center"} style={{ color: "white" }}>
         <h2>Users</h2>
       </CardTitle>
       <br />
-      <TableContainer style={{backgroundColor:"white"}}>
-        <Table variant="striped" colorScheme="teal">
+      <TableContainer style={{ backgroundColor: "white" }}>
+        <Table >
           {/* <TableCaption>User table</TableCaption>3 */}
 
           <Thead>
@@ -61,8 +60,8 @@ const AdminUserManagement = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {users
-              ? users.map((users) => (
+            {usersDetails
+              ? usersDetails.map((users) => (
                   <Tr>
                     <Td>{users.name}</Td>
                     <Td>{users.email}</Td>
@@ -84,6 +83,11 @@ const AdminUserManagement = () => {
               : null}
           </Tbody>
         </Table>
+        <Pagination
+          setStartIndex={setStartIndex}
+          setEndIndex={setEndIndex}
+          total={totalUsers}
+        />
       </TableContainer>
     </Flex>
   );

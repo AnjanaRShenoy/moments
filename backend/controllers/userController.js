@@ -174,15 +174,16 @@ const resendOtp = asyncHandler(async (req, res) => {
 // to check the otp
 const checkOtp = asyncHandler(async (req, res) => {
   try {
-    const otpUser = await Otp.findOne({ email: req.body.email });
+    console.log(req.body, "oeyye");
+    const otpUser = await Otp.findOne({ email: req.body.otpemail });
 
     if (otpUser.otp == req.body.otp) {
 
       const user = await User.create({                       //saving the user data in otp collection
-        name: req.body.name,
-        email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
-        password: req.body.password
+        name: req.body.otpname,
+        email: req.body.otpemail,
+        phoneNumber: req.body.otpno,
+        password: req.body.otppass
       });
 
       res.status(201).json({
@@ -253,15 +254,20 @@ const createPost = asyncHandler(async (req, res) => {
 
     const userInfo = JSON.parse(req.body.userInfo)
     const userId = userInfo._id;
+
     if (req.file) {
-      const post = await Post.create({
+      const postObject = {
         userId: userId,
         post: req.file.filename,
-        caption: req.body.caption
-      })
-        .catch(err => {
-          console.log(err.message);
-        })
+      };
+
+
+      if (req.body.caption) {
+        postObject.caption = req.body.caption;
+      }
+
+      const post = await Post.create(postObject);
+
       res.status(200).json({ post: req.file.filename })
     }
   } catch (err) {
@@ -303,30 +309,22 @@ const comment = asyncHandler(async (req, res) => {
       comment: req.body.comment,
       postId: req.body.postId
     })
+    const post = await Post.findOne({ _id: req.body.postId })
+      .populate("post")
+
+    console.log(post);
 
     const notification = await Notification.create({
       type: "comment",
       content: "has commented on your post",
-      resource: [{ postId: req.body.postId }],
+      resource: [req.body.postId],
       sender: userInfo._id,
-
+      receiver: post.userId
     })
 
-    const populatedNotification = await Notification.findById(notification._id).populate({
-      path: "resource.postId",
-      populate: {
-        path: "userId",
-        model: "User",
-      },
-    });
 
-    const receiverId = populatedNotification.resource[0].postId.userId._id;
 
-    await Notification.findByIdAndUpdate(
-      populatedNotification._id,
-      { receiver: receiverId },
-      { new: true }
-    );
+
     res.status(200).json(comment)
   } catch (err) {
     console.log(err);
@@ -409,21 +407,28 @@ const likePost = asyncHandler(async (req, res) => {
         { _id: postId },
         { $pull: { like: { userId: userInfo._id } } },
         { new: true })
+      const notification = await Notification.findOneAndDelete({
+        type: "like",
+        sender: userInfo,
+        resource: [postId]
+      })
       res.status(200).json({ message: "Post has been unliked" })
     } else {
       const likePost = await Post.findOneAndUpdate(
         { _id: postId },
         { $push: { like: { userId: userInfo._id } } },
         { upsert: true, new: true }
-
       )
-      const notification = await Notification.create({
+      const post = await Post.findOne({ _id: postId })
+        .populate("post")
 
+      const notification = await Notification.create({
         type: "like",
         content: "has liked you post",
-        resource: [postsDetails],
+        resource: [postId],
         sender: userInfo,
-        // receiver: user._id
+        receiver: post.userId
+
       })
 
       res.status(200).json({ message: "Post has been liked" })
@@ -481,8 +486,11 @@ const getFullProfile = asyncHandler(async (req, res) => {
     const followCount = await Follow.findOne({ userId: req.query._id })
     const followers = followCount.follower.length
     const followings = followCount.following.length
+    const comments = await Comment.find()     //to retrieve the user and post details 
+      .populate("userId")
+      .sort({ _id: -1 })
 
-    res.status(200).json({ user: user, post: post, postCount, followers, followings })
+    res.status(200).json({ user: user, post: post, postCount, followers, followings, comments })
   } catch (err) {
     console.log(err);
   }
@@ -518,6 +526,11 @@ const follow = asyncHandler(async (req, res) => {
         { userId: user._id },
         { $pull: { follower: userInfo } },
         { new: true })
+      const notification = await Notification.findOneAndDelete({
+        type: "follow",
+        sender: userInfo,
+        receiver: user._id,
+      })
       res.status(200).json({ message: "Unfollowed successfully" })
     } else {
 
@@ -532,7 +545,7 @@ const follow = asyncHandler(async (req, res) => {
       )
       const notification = await Notification.create({
         type: "follow",
-        content: "followed you",
+        content: " has started following you",
         // resource:[user._id],
         sender: userInfo,
         receiver: user._id
@@ -589,10 +602,39 @@ const reportComment = asyncHandler(async (req, res) => {
 
 const getNotification = asyncHandler(async (req, res) => {
   try {
+    console.log(req.query, "req.query");
     const notification = await Notification.find({ receiver: req.query._id })
       .populate("sender")
+      .sort({ _id: -1 })
 
     res.status(200).json(notification)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const editComment = asyncHandler(async (req, res) => {
+  try {
+    console.log(req.body, "req.query");
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const deleteComment = asyncHandler(async (req, res) => {
+  try {
+    const comment = await Comment.findByIdAndDelete({ _id: req.body.commentId })
+    console.log(comment);
+    res.status(200).json("Comment has been deleted")
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const deletePost = asyncHandler(async (req, res) => {
+  try {
+    const post = await Post.findByIdAndDelete({ _id: req.body.postId })
+    res.status(200).json(post)
   } catch (err) {
     console.log(err);
   }
@@ -603,7 +645,6 @@ export {
   registerUser,
   logoutUser,
   resendOtp,
-  // getUserProfile,
   updateUserProfile,
   updateUserImage,
   checkOtp,
@@ -621,4 +662,7 @@ export {
   userProfile,
   reportComment,
   getNotification,
+  editComment,
+  deleteComment,
+  deletePost,
 };

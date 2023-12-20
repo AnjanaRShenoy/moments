@@ -111,6 +111,7 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data,
       })
     }),
+
     reportComment: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/reportComment`,
@@ -119,7 +120,7 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       })
     }),
 
-    
+
     savePost: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/savePost`,
@@ -153,7 +154,30 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       })
     }),
 
-    
+    editComment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/editComment`,
+        method: "PATCH",
+        body: data
+      })
+    }),
+
+    deleteComment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/deleteComment`,
+        method: "DELETE",
+        body: data
+      })
+    }),
+
+    deletePost: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/deletePost`,
+        method: "DELETE",
+        body: data
+      })
+    })
+
   }),
 });
 
@@ -176,6 +200,8 @@ export const {
   useGetSavedPostQuery,
   useCheckUserBlockedQuery,
   useFollowMutation,
+  useEditCommentMutation,
+  useDeleteCommentMutation,
+  useDeletePostMutation,
 
-  
 } = userAdminApiSlice;
