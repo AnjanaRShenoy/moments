@@ -8,9 +8,11 @@ const followSchema = mongoose.Schema(
             required: true,
             unique: true
         },
-        following: [],
+        following: [{type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'}],
 
-        follower: [],
+        follower: [{type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'}],
 
 
     }

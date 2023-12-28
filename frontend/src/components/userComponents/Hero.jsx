@@ -45,8 +45,8 @@ import {
   useDeleteCommentMutation,
 } from "../../slices/userApiSlice";
 import { toast } from "react-toastify";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -94,7 +94,7 @@ const Hero = () => {
   useEffect(() => {
     if (posts) {
       setFollowing(posts.follow);
-      console.log(posts.follow);
+      console.log(posts.follow,"follow");
     }
   }, [posts]);
 

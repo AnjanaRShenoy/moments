@@ -7,6 +7,7 @@ import Post from "../models/postModel.js";
 import Comment from "../models/commentModel.js";
 import Follow from "../models/followModel.js"
 import Notification from "../models/notificationModel.js";
+import mongoose from "mongoose";
 
 import { APP_PASSWORD, ADMIN_EMAIL } from "../config/connections.js";
 
@@ -486,11 +487,39 @@ const getFullProfile = asyncHandler(async (req, res) => {
     const followCount = await Follow.findOne({ userId: req.query._id })
     const followers = followCount.follower.length
     const followings = followCount.following.length
+    const followList = await Follow.findOne({ userId: req.query._id })
+
+    const stringId = req.query._id;
+    const objectId = new mongoose.Types.ObjectId(stringId);
+    const follow = await Follow.aggregate([
+      {
+        $match: {
+          userId: objectId
+        }
+      }, {
+        $lookup: {
+          from: "users",
+          localField: "follower",
+          foreignField: '_id',
+          as: "followerData"
+        }
+      }
+      , {
+        $lookup: {
+          from: "users",
+          localField: "following",
+          foreignField: '_id',
+          as: "followingData"
+        }
+      }
+    ])
+    console.log(follow, "userData");
+
     const comments = await Comment.find()     //to retrieve the user and post details 
       .populate("userId")
       .sort({ _id: -1 })
 
-    res.status(200).json({ user: user, post: post, postCount, followers, followings, comments })
+    res.status(200).json({ user: user, post: post, postCount, followers, followings, comments, followList, follow })
   } catch (err) {
     console.log(err);
   }
@@ -558,18 +587,100 @@ const follow = asyncHandler(async (req, res) => {
   }
 })
 
+const follower = asyncHandler(async (req, res) => {
+  try {
+    const user = req.body.userId
+
+    const userInfo = req.body.userInfo._id
+
+    const userExist = await Follow.findOne({ userId: userInfo })
+    if (!userExist) {
+      const createUser = await Follow.create({ userId: userInfo })
+    }
+
+    const followerExist = await Follow.findOne({ userId: user })
+    if (!followerExist) {
+      const createFollower = await Follow.create({ userId: userExist })
+    }
+
+    const follow = await Follow.findOne({
+      userId: userInfo,
+      following: { $in: user }
+    });
+
+    if (follow) {
+      const unfollow = await Follow.findOneAndUpdate(
+        { userId: userInfo },
+        { $pull: { following: user } },
+        { new: true })
+      const unfollower = await Follow.findOneAndUpdate(
+        { userId: user },
+        { $pull: { follower: userInfo } },
+        { new: true })
+      const notification = await Notification.findOneAndDelete({
+        type: "follow",
+        sender: userInfo,
+        receiver: user,
+      })
+      res.status(200).json({ message: "Unfollowed successfully" })
+    } else {
+
+      const follow = await Follow.findOneAndUpdate(
+        { userId: userInfo },
+        { $push: { following: user } },
+        { new: true })
+      const follower = await Follow.findOneAndUpdate(
+        { userId: user },
+        { $push: { follower: userInfo } },
+        { new: true }
+      )
+      const notification = await Notification.create({
+        type: "follow",
+        content: " has started following you",
+        // resource:[user._id],
+        sender: userInfo,
+        receiver: user
+      })
+      res.status(200).json({ message: "Followed successfully" })
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 const userProfile = asyncHandler(async (req, res) => {
   try {
 
-    const user = await User.find({ _id: req.query._id })
-    const post = await Post.find({ userId: req.query._id })
-    const postCount = post.length
+    const stringId = req.body.profileId;
+    const profileId = new mongoose.Types.ObjectId(stringId);
 
-    const followCount = await Follow.findOne({ userId: req.query._id })
-    const followers = followCount.follower.length
-    const followings = followCount.following.length
+    const followExist = await Follow.findOne({
+      userId: req.body.userInfo._id,
+      'following': profileId 
+    })
 
-    res.status(200).json({ user: user, post: post, postCount, followers, followings })
+    if (followExist) {
+      const user = await User.find({ _id: req.body.profileId })
+      const post = await Post.find({ userId: req.body.profileId })
+      const postCount = post.length
+      const followCount = await Follow.findOne({ userId: req.body.profileId })
+      const followers = followCount.follower.length
+      const followings = followCount.following.length
+
+      res.status(200).json({ user: user, post: post, postCount,followCount, followers, followings })
+
+    } else {
+      const user = await User.find({ _id: req.body.profileId })
+      const post = await Post.find({ userId: req.body.profileId })
+      const postCount = post.length
+      const followCount = await Follow.findOne({ userId: req.body.profileId })
+      const followers = followCount.follower.length
+      const followings = followCount.following.length
+
+      res.status(200).json({ user: user, postCount,followCount, followers, followings })
+    }
+
   } catch (err) {
     console.log(err);
   }
@@ -624,7 +735,11 @@ const editComment = asyncHandler(async (req, res) => {
 const deleteComment = asyncHandler(async (req, res) => {
   try {
     const comment = await Comment.findByIdAndDelete({ _id: req.body.commentId })
-    console.log(comment);
+    // const notification = await Notification.findOneAndDelete(
+    //   {
+    //     resource: { $elemMatch: req.body.commentId }
+    //   });
+
     res.status(200).json("Comment has been deleted")
   } catch (err) {
     console.log(err);
@@ -639,6 +754,59 @@ const deletePost = asyncHandler(async (req, res) => {
     console.log(err);
   }
 })
+
+const editCaption = asyncHandler(async (req, res) => {
+  try {
+    const caption = await Post.findByIdAndUpdate({ _id: req.body.postId }, { caption: req.body.caption })
+    res.status(200).json(caption)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const removeFollower = asyncHandler(async (req, res) => {
+  try {
+
+    const follow = await Follow.findOneAndUpdate({ userId: req.body.userInfo._id },
+      { $pull: { follower: req.body.userId } },
+      { new: true })
+    const follower = await Follow.findOneAndUpdate({ userId: req.body.userId },
+      { $pull: { following: req.body.userInfo._id } },
+      { new: true })
+    console.log(follow);
+    res.status(200).json(follow)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const removeFollowing = asyncHandler(async (req, res) => {
+  try { 
+  
+    const follow = await Follow.findOneAndUpdate({ userId: req.body.userInfo._id },
+      { $pull: { following: req.body.userId } },
+      { new: true })
+    const follower = await Follow.findOneAndUpdate({ userId: req.body.userId },
+      { $pull: { follower: req.body.userInfo._id } },
+      { new: true })
+  
+    res.status(200).json(follow)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+const search = asyncHandler(async (req, res) => {
+  try {
+    const search = req.body.search
+    const searchRegex = new RegExp(search, "i")
+    const user = await User.find({ name: { $regex: searchRegex } })
+    res.status(200).json(user)
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 
 export {
   authUser,
@@ -665,4 +833,9 @@ export {
   editComment,
   deleteComment,
   deletePost,
+  editCaption,
+  removeFollower,
+  removeFollowing,
+  search,
+  follower,
 };

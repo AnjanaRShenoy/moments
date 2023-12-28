@@ -25,6 +25,11 @@ import {
   editComment,
   deleteComment,
   deletePost,
+  editCaption,
+  removeFollower,
+  removeFollowing,
+  search,
+  follower,
 
 } from "../controllers/userController.js";
 import { auth } from "../middleware/authMiddleware.js";
@@ -69,7 +74,9 @@ router.get("/getFullProfile", auth, getFullProfile)
 
 router.post("/follow", auth, follow)
 
-router.get(`/userProfile`, auth, userProfile)
+router.post("/follower", auth, follower)
+
+router.post(`/userProfile`, auth, userProfile)
 
 router.post(`/reportComment`, auth, reportComment)
 
@@ -80,5 +87,13 @@ router.patch('/editComment', auth, editComment)
 router.delete('/deleteComment', auth, deleteComment)
 
 router.delete('/deletePost', auth, deletePost)
+
+router.patch('/editCaption', auth, editCaption)
+
+router.delete('/removeFollower', auth, removeFollower)
+
+router.delete('/removeFollowing', auth, removeFollowing)
+
+router.post('/search', auth, search)
 
 export default router;

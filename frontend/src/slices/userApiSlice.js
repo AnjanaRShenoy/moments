@@ -176,8 +176,55 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
         body: data
       })
-    })
+    }),
 
+    editCaption: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/editCaption`,
+        method: "PATCH",
+        body: data
+      })
+    }),
+
+    removeFollower: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/removeFollower`,
+        method: "DELETE",
+        body: data
+      })
+    }),
+
+    removeFollowing: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/removeFollowing`,
+        method: "DELETE",
+        body: data
+      })
+    }),
+
+    search: builder.mutation({
+      query:(data)=>({
+        url:`${USERS_URL}/search`,
+        method:"POST",
+        body:data
+      })
+    }),
+
+    userProfile: builder.mutation({
+      query:(data)=>({
+        url:`${USERS_URL}/userProfile`,
+        method:"POST",
+        body:data
+      })
+    }),
+
+    follower: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/follower`,
+        method: "POST",
+        body: data
+      })
+    }),
   }),
 });
 
@@ -203,5 +250,11 @@ export const {
   useEditCommentMutation,
   useDeleteCommentMutation,
   useDeletePostMutation,
+  useEditCaptionMutation,
+  useRemoveFollowerMutation,
+  useRemoveFollowingMutation,
+  useSearchMutation,
+  useUserProfileMutation,
+  useFollowerMutation,
 
 } = userAdminApiSlice;

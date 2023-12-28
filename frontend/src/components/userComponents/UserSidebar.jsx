@@ -37,7 +37,7 @@ const LinkItems = [
   { name: "Home", icon: FiHome, url: "/" },
   { name: "Profile", icon: CgProfile, url: "/fullProfile" }, 
   { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
-  { name: "Messages", icon: TiMessages },
+  { name: "Messages", icon: TiMessages, url:"/messages" },
   { name: "Notifications", icon: IoIosNotificationsOutline, url:"/notification" },
 
 

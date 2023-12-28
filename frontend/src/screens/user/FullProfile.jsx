@@ -41,6 +41,7 @@ import {
   MDBModalBody,
   MDBModalFooter,
 } from "mdb-react-ui-kit";
+
 import { FaTrashAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { HiDotsVertical } from "react-icons/hi";
@@ -52,6 +53,9 @@ import {
   useCommentMutation,
   useDeleteCommentMutation,
   useDeletePostMutation,
+  useEditCaptionMutation,
+  useRemoveFollowerMutation,
+  useRemoveFollowingMutation,
   useReportCommentMutation,
 } from "../../slices/userApiSlice";
 import { toast } from "react-toastify";
@@ -73,17 +77,33 @@ const FullProfile = () => {
   const [commentData, setCommentData] = useState("");
   const [postComment] = useCommentMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [userFollower, setUserFollower] = useState("");
+  const [userFollowing, setUserFollowing] = useState("");
+  const [followerList, setFollowerList] = useState("");
+  const [followingList, setFollowingList] = useState("");
+  const [removeFollowing, setRemoveFollowing] = useState("");
+  const [removeFollower, setRemoveFollower] = useState("");
+  const [edit, setEdit] = useState("");
+  const [caption, setCaption] = useState("");
+  const [following, setFollowing] = useState("");
+  const [follower, setFollower] = useState("");
+
   const navigate = useNavigate();
   const fetchData = async () => {
     try {
       const response = await axios.get(`/api/users/getFullProfile?_id=${_id}`);
-
+      console.log(response.data.follow[0].followingData, "leyyyy");
       setUser(response.data.user[0]);
       setPost(response.data.post);
       setFollowers(response.data.followers);
       setFollowings(response.data.followings);
       setPostCount(response.data.postCount);
       setCommentData(response.data.comments);
+      setFollowerList(response.data.followList.follower);
+      setFollowingList(response.data.followList.following);
+      setFollowing(response.data.follow[0].followingData);
+      setFollower(response.data.follow[0].followerData);
     } catch (err) {
       console.error(err);
     }
@@ -104,6 +124,20 @@ const FullProfile = () => {
       if (comment.trim()) {
         const res = await postComment({ comment, userInfo, postId }).unwrap();
         setComment("");
+        fetchData();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [editCaption] = useEditCaptionMutation();
+  const submitCaption = async (postId) => {
+    try {
+      debugger;
+      if (caption.trim()) {
+        const res = await editCaption({ caption, userInfo, postId }).unwrap();
+
         fetchData();
       }
     } catch (err) {
@@ -138,10 +172,48 @@ const FullProfile = () => {
     try {
       const res = await removePos({ postId }).unwrap();
       fetchData();
-      toast.success("Removed the post successfully")
+      toast.success("Removed the post successfully");
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const [scrollableModal, setScrollableModal] = useState(false);
+
+  // const toggle = (userId) => {
+  //   setUserFollower(userId);
+  //   setScrollableModal(!scrollableModal);
+  // };
+
+  const [followingModal, setFollowingModal] = useState(false);
+  const getFollowing = (userId) => {
+    setUserFollowing(userId);
+    setFollowingModal(!followingModal);
+  };
+
+  const getFollower = async (userId) => {
+    setUserFollower(userId);
+    setScrollableModal(!scrollableModal);
+  };
+
+  const [staticModal, setStaticModal] = useState(false);
+  const removeFollow = () => setStaticModal(!staticModal);
+
+  const [Modal, setModal] = useState(false);
+  const removeFoll = () => setModal(!Modal);
+ 
+  const [removeFollowings] = useRemoveFollowingMutation();
+  const unfollow = async (userId) => {
+    const res = await removeFollowings({ userId, userInfo }).unwrap();
+    fetchData();
+    toast.success("Unfollowed successfully");
+  };
+
+  const [removeFollowers] = useRemoveFollowerMutation();
+  const unfollower = async (userId) => {
+    const res = await removeFollowers({ userId, userInfo }).unwrap();
+    fetchData();
+    toast.success("Unfollowed successfully");
   };
 
   return (
@@ -167,7 +239,12 @@ const FullProfile = () => {
                       alt="Generic placeholder image"
                       className="mt-4 mb-2 img-thumbnail"
                       fluid
-                      style={{ width: "150px", zIndex: "1" }}
+                      style={{
+                        width: "150px",
+                        height: "300px",
+                        zIndex: "1",
+                        objectFit: "cover",
+                      }}
                     />
                     <MDBBtn
                       outline
@@ -193,13 +270,20 @@ const FullProfile = () => {
                         Photos
                       </MDBCardText>
                     </div>
-                    <div className="px-3">
+                    <div
+                      className="px-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => getFollower(user._id)}
+                    >
                       <MDBCardText className="mb-1 h5">{followers}</MDBCardText>
                       <MDBCardText className="small text-muted mb-0">
                         Followers
                       </MDBCardText>
                     </div>
-                    <div>
+                    <div
+                      style={{ cursor: "pointer" }}
+                      onClick={() => getFollowing(user._id)}
+                    >
                       <MDBCardText className="mb-1 h5">
                         {followings}
                       </MDBCardText>
@@ -286,6 +370,12 @@ const FullProfile = () => {
                           setDeletePost(filteredPost._id), onOpen();
                         }}
                       />
+                      <i
+                        class="fas fa-edit"
+                        onClick={() => {
+                          setEdit(filteredPost._id);
+                        }}
+                      ></i>
                       <MDBBtn
                         className="btn-close"
                         color="none"
@@ -305,6 +395,43 @@ const FullProfile = () => {
                           src={`../../../${filteredPost.post}`}
                         />
                       </Flex>
+                      {edit ? (
+                        <Flex marginTop="10px">
+                          <Input
+                            id="caption"
+                            bg="white"
+                            w={96}
+                            p={4}
+                            color="black"
+                            borderWidth="1px"
+                            placeholder="Enter your caption"
+                            value={caption}
+                            marginLeft="15px"
+                            onChange={(e) => setCaption(e.target.value)}
+                          />
+                          <Button
+                            type="submit"
+                            colorScheme="blue"
+                            ml={2}
+                            onClick={() => {
+                              submitCaption(filteredPost._id);
+                            }}
+                          >
+                            Post
+                          </Button>
+                        </Flex>
+                      ) : (
+                        <Text
+                          style={{
+                            marginLeft: "20px",
+                            marginTop: "10px",
+                            fontSize: "20px",
+                            fontWeight: "normal",
+                          }}
+                        >
+                          {filteredPost.caption}
+                        </Text>
+                      )}
                     </MDBModalBody>
                     <MDBModalFooter style={{ flexDirection: "column" }}>
                       <Flex>
@@ -441,6 +568,169 @@ const FullProfile = () => {
           </Modal>
         )}
       </MDBModal>
+
+      <MDBModal
+        open={scrollableModal}
+        setOpen={setScrollableModal}
+        tabIndex="-1"
+      >
+        <MDBModalDialog scrollable>
+          <MDBModalContent>
+            <MDBModalHeader>
+              {/* <MDBModalTitle>Modal title</MDBModalTitle> */}
+              <MDBBtn
+                className="btn-close"
+                color="none"
+                onClick={() => setScrollableModal(!scrollableModal)}
+              ></MDBBtn>
+            </MDBModalHeader>
+            <MDBModalBody>
+              {follower && follower.length > 0 ? (
+                follower.map((follower) => (
+                  <Flex justifyContent="space-around" alignItems="baseline">
+                    <p>{follower.name}</p>
+                    <Button
+                      size="xs"
+                      onClick={() => {
+                        setRemoveFollower(follower), removeFollow();
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </Flex>
+                ))
+              ) : (
+                <>No followers</>
+              )}
+            </MDBModalBody>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
+
+      <MDBModal open={followingModal} setOpen={setFollowingModal} tabIndex="-1">
+        <MDBModalDialog scrollable>
+          <MDBModalContent>
+            <MDBModalHeader>
+              {/* <MDBModalTitle>Modal title</MDBModalTitle> */}
+              <MDBBtn
+                className="btn-close"
+                color="none"
+                onClick={() => setFollowingModal(!followingModal)}
+              ></MDBBtn>
+            </MDBModalHeader>
+            <MDBModalBody>
+              {following && following.length > 0 ? (
+                following.map((following) => (
+                  <Flex alignItems="baseline">
+                    <Flex
+                      flex="1"
+                      gap="4"
+                      alignItems="center"
+                      flexWrap="wrap"
+                      justifyContent="space-between"
+                    >
+                      <Image
+                        style={{
+                          borderRadius: "50px",
+                          height: "35px",
+                          width: "35px",
+                          marginRight: "10px",
+                        }}
+                        name={following.name}
+                        src={`../../../${following.profileImage}`}
+                      />
+                      <p>{following.name}</p>
+                      <Button
+                        size="xs"
+                        onClick={() => {
+                          setRemoveFollowing(following), removeFoll();
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </Flex>
+                  </Flex>
+                ))
+              ) : (
+                <>No followings</>
+              )}
+            </MDBModalBody>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
+
+      {removeFollower && (
+        <MDBModal
+          staticBackdrop
+          tabIndex="-1"
+          open={staticModal}
+          setOpen={setStaticModal}
+        >
+          <MDBModalDialog>
+            <MDBModalContent>
+              <MDBModalHeader>
+                <MDBModalTitle>
+                  Unfollower?
+                </MDBModalTitle>
+                <MDBBtn
+                  className="btn-close"
+                  color="none"
+                  onClick={() => {
+                    removeFollow();
+                  }}
+                ></MDBBtn>
+              </MDBModalHeader>
+
+              <MDBModalFooter>
+                <MDBBtn color="secondary" onClick={removeFollow}>
+                  Cancel
+                </MDBBtn>
+                <MDBBtn
+                  onClick={() => {
+                    unfollower(removeFollower._id), removeFollow();
+                  }}
+                >
+                  Unfollow
+                </MDBBtn>
+              </MDBModalFooter>
+            </MDBModalContent>
+          </MDBModalDialog>
+        </MDBModal>
+      )}
+
+      {removeFollowing && (
+        <MDBModal staticBackdrop tabIndex="-1" open={Modal} setOpen={setModal}>
+          <MDBModalDialog>
+            <MDBModalContent>
+              <MDBModalHeader>
+                <MDBModalTitle>
+                  Unfollowing?
+                </MDBModalTitle>
+                <MDBBtn
+                  className="btn-close"
+                  color="none"
+                  onClick={() => {
+                    removeFoll();
+                  }}
+                ></MDBBtn>
+              </MDBModalHeader>
+
+              <MDBModalFooter>
+                <MDBBtn color="secondary" onClick={removeFoll}>
+                  Cancel
+                </MDBBtn>
+                <MDBBtn
+                  onClick={() => {
+                    unfollow(removeFollowing._id), removeFoll();
+                  }}
+                >
+                  Unfollow
+                </MDBBtn>
+              </MDBModalFooter>
+            </MDBModalContent>
+          </MDBModalDialog>
+        </MDBModal>
+      )}
     </div>
   );
 };
