@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Box, Avatar, Text, Badge } from "@chakra-ui/react";
+import { Flex, Box, Avatar, Text, Badge, Checkbox } from "@chakra-ui/react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import io from "socket.io-client";
+import { useDeleteNotificationMutation } from "../../slices/userApiSlice";
+import { toast } from "react-toastify";
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 
 const NotificationScreen = () => {
   const [notification, setNotification] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
   const fetchData = async () => {
     try {
       const res = await axios.get(
         `/api/users/getNotification?_id=${userInfo._id}`
       );
-      console.log(res.data);
+
       setNotification(res.data);
     } catch (err) {
       console.log(err);
@@ -21,10 +27,46 @@ const NotificationScreen = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("get notification", (get) => {
+        console.log(get);
+      });
+    }
+  }, []);
+
+  const handleCheckboxChange = (e) => {
+    setIsChecked(e.target.checked);
+
+    if (e.target.checked) {
+      deleteNotification();
+    }
+  };
+
+  const deleteNotification = async () => {
+    try {
+      const res = await axios.post(
+        `/api/users/deleteNotification?_id=${userInfo._id}`
+      );
+      fetchData();
+      toast.success("Deleted all");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
-      <Flex borderColor="white" width="700px"  direction="column" gap="20px">
-        {notification ? (
+      <Flex borderColor="white" width="700px" direction="column" gap="20px">
+        <Checkbox
+          defaultChecked={false}
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+          style={{ color: "white" }}
+        >
+          Mark as read
+        </Checkbox>
+        {notification && notification.length > 0 ? (
           notification.map((notification) => (
             <div key={notification._id}>
               <Flex
@@ -53,7 +95,9 @@ const NotificationScreen = () => {
             </div>
           ))
         ) : (
-          <>NULL</>
+          <div style={{ color: "white", fontSize: "25px" }}>
+            No notifications to show
+          </div>
         )}
       </Flex>
     </div>

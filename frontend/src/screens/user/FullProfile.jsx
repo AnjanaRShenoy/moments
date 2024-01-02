@@ -93,7 +93,7 @@ const FullProfile = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(`/api/users/getFullProfile?_id=${_id}`);
-      console.log(response.data.follow[0].followingData, "leyyyy");
+     
       setUser(response.data.user[0]);
       setPost(response.data.post);
       setFollowers(response.data.followers);

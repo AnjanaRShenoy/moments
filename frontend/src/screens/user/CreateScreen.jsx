@@ -39,7 +39,7 @@ const CreateScreen = () => {
 
   const postImage = async () => {
     //to post the image
-    console.log("entered");
+
     try {
       onClose()
       const formData = new FormData();
@@ -48,7 +48,7 @@ const CreateScreen = () => {
     }
       formData.append("filed", image);
       formData.append("userInfo", JSON.stringify(userInfo));
-      console.log(formData, "form");
+     
       const res = await post(formData).unwrap();
       
       toast.success("Successfully uploaded the post");

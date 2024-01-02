@@ -15,7 +15,12 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useFollowMutation, useFollowerMutation, useUserProfileMutation } from "../../slices/userApiSlice";
+import {
+  useFollowMutation,
+  useFollowerMutation,
+  useRequestMutation,
+  useUserProfileMutation,
+} from "../../slices/userApiSlice";
 
 const UserProfile = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -32,14 +37,13 @@ const UserProfile = () => {
   const fetchData = async () => {
     try {
       const response = await userProfile({ profileId, userInfo }).unwrap();
-   console.log(response.user[0]);
+      
       setUser(response.user[0]);
       setPost(response.post);
       setFollowers(response.followers);
       setFollowings(response.followings);
       setPostCount(response.postCount);
       setFollow(response.followCount);
-
     } catch (err) {
       console.log(err);
     }
@@ -49,11 +53,22 @@ const UserProfile = () => {
     fetchData();
   }, []);
 
-  const [followMutation]= useFollowerMutation()
+  const [request] = useRequestMutation()
+  const requestUser = async (userId) => {
+    debugger
+    try {
+      const res = await request({ userInfo, userId }).unwrap();
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [followMutation] = useFollowerMutation();
   const followUser = async (userId) => {
     try {
-      debugger
-      console.log("entered");
+      debugger;
+  
       const res = await followMutation({ userInfo, userId }).unwrap();
       fetchData();
     } catch (err) {
@@ -96,7 +111,6 @@ const UserProfile = () => {
                   style={{ backgroundColor: "#f8f9fa" }}
                 >
                   <div className="d-flex justify-content-end text-center py-1">
-                    
                     {/* {follow.follower.find((follo)=>follo===user._id)?("hi"):(follo)} */}
                     {follow &&
                     follow.follower.find((follo) => follo === userInfo._id) ? (
@@ -113,7 +127,7 @@ const UserProfile = () => {
                         colorScheme="teal"
                         variant="outline"
                         style={{ height: "25px" }}
-                        onClick={() => followUser(user._id)}
+                        onClick={() => requestUser(user._id)}
                       >
                         Follow
                       </Button>

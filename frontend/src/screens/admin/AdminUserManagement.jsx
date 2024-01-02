@@ -41,7 +41,7 @@ const AdminUserManagement = () => {
       setUsersDetails(users.slice(startIndex, endIndex));
     }
   }, [startIndex, endIndex, users, setUsersDetails]);
-  console.log(totalUsers, startIndex, endIndex);
+
   return (
     <Flex flexDirection={"column"}>
       <CardTitle align={"center"} justify={"center"} style={{ color: "white" }}>

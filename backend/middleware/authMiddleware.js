@@ -7,8 +7,6 @@ auth = asyncHandler(async (req, res, next) => {
   let token;
 
   token = req.cookies.jwt;
-  console.log(token, 'token')
-  console.log(req.cookies,"cookie");
 
   if (token) {
     try {

@@ -151,7 +151,7 @@ const getComment = asyncHandler(async (req, res) => {
         $unwind: "$userData"
       }
     ])
-    console.log(comment, "commme");
+  
 
     res.status(200).json(comment)
   } catch (err) {

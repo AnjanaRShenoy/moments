@@ -19,6 +19,7 @@
     "@zegocloud/zego-uikit-prebuilt": "^1.8.15",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.2",
+    "date-fns": "^3.0.6",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
     "jwt-decode": "^4.0.0",
@@ -31,7 +32,8 @@
     "react-icons": "^4.12.0",
     "react-router-bootstrap": "^0.26.2",
     "react-router-dom": "^6.19.0",
-    "react-toastify": "^9.1.3"
+    "react-toastify": "^9.1.3",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

@@ -4,7 +4,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useGetSavedPostQuery } from "../../slices/userApiSlice";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import hi from "../../../public/hi";
+
 const SavedPostScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const {
@@ -18,7 +18,8 @@ const SavedPostScreen = () => {
   useEffect(()=>{
     refetch()
   },[refetch])
-  
+
+ 
   return (
     <div>
       
@@ -30,6 +31,7 @@ const SavedPostScreen = () => {
           flexWrap: "wrap",
           maxWidth: "900px",
           margin: "0 auto",
+      
         }}
       >
         {postDetails ? (

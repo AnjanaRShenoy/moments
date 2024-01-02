@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   IconButton,
   Box,
@@ -31,20 +31,59 @@ import { Button } from "react-bootstrap";
 import { useLogoutMutation } from "../../slices/userApiSlice";
 import { useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
-
+import io from "socket.io-client";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useSocket } from "../../context/Context";
 
 const LinkItems = [
   { name: "Home", icon: FiHome, url: "/" },
-  { name: "Profile", icon: CgProfile, url: "/fullProfile" }, 
-  { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
-  { name: "Messages", icon: TiMessages, url:"/messages" },
-  { name: "Notifications", icon: IoIosNotificationsOutline, url:"/notification" },
-
-
+  { name: "Profile", icon: CgProfile, url: "/fullProfile" },
+  { name: "Saved post", icon: IoIosSave, url: "/savedPost" },
+  {
+    name: "Messages",
+    icon: TiMessages,
+    url: "/messages/6571e0186f0928fc40e4b926#!",
+  },
+  {
+    name: "Notifications",
+    icon: IoIosNotificationsOutline,
+    url: "/notification",
+  },
+  { name: "Follow Requests", icon: IoIosNotificationsOutline, url: "/request" },
 ];
 
 export default function UserSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const socket = useSocket();
+
+  const fetchData=async()=>{
+
+    try{
+    const res = await axios.get(
+      `/api/users/getNumbers?_id=${userInfo._id}`
+    );
+console.log(res);
+    }catch(err){
+      console.log(err);
+    }
+  }
+  useEffect(()=>{
+    fetchData()
+  },[])
+
+  useEffect(() => {
+    if (socket) {
+      socket.emit("yes chat", userInfo._id);
+      socket.on("get notification", () => {
+        fetchData()
+      });
+    }
+  }, [socket]);
+
+
 
   return (
     <Box bg={useColorModeValue("gray.100", "gray.900")}>
@@ -84,10 +123,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
     }
   };
 
-
-  const handleCreate=()=>{
-    navigate(`/room/${Date.now()}`)
-  }
+  const handleCreate = () => {
+    navigate(`/room/${Date.now()}`);
+  };
   return (
     <Box
       bg={useColorModeValue("white", "gray.900")}
@@ -107,11 +145,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem
-          key={link.name}
-          
-          icon={link.icon}
-        >
+        <NavItem key={link.name} icon={link.icon}>
           <Link as={Link} to={link.url}>
             {link.name}
           </Link>
@@ -119,9 +153,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
       ))}
       <Box>
         <NavItem icon={RiLogoutCircleRLine} onClick={handleCreate}>
-          <Link >
-            Video Call
-          </Link>
+          <Link>Video Call</Link>
         </NavItem>
       </Box>
       <Box>

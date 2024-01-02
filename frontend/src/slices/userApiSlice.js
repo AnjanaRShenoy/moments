@@ -154,6 +154,14 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       })
     }),
 
+    unfollow: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/unfollow`,
+        method: "POST",
+        body: data
+      })
+    }),
+
     editComment: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/editComment`,
@@ -203,18 +211,18 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
     }),
 
     search: builder.mutation({
-      query:(data)=>({
-        url:`${USERS_URL}/search`,
-        method:"POST",
-        body:data
+      query: (data) => ({
+        url: `${USERS_URL}/search`,
+        method: "POST",
+        body: data
       })
     }),
 
     userProfile: builder.mutation({
-      query:(data)=>({
-        url:`${USERS_URL}/userProfile`,
-        method:"POST",
-        body:data
+      query: (data) => ({
+        url: `${USERS_URL}/userProfile`,
+        method: "POST",
+        body: data
       })
     }),
 
@@ -225,6 +233,62 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         body: data
       })
     }),
+
+    getMessage: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/getMessage`,
+        method: "POST",
+        body: data
+      })
+    }),
+
+    sendMessage: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/sendMessage`,
+        method: "POST",
+        body: data
+      })
+    }),
+
+    request: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/request`,
+        method: "POST",
+        body: data
+      })
+    }),
+
+    suggestions: builder.query({
+      query: ({ _id }) => ({
+        url: `${USERS_URL}/suggestions?_id=${_id}`,
+        method: "GET"
+      })
+    }),
+
+    payment: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/payment`,
+        method: "POST",
+        body: data
+      })
+    }),
+    
+    chat: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/chat`,
+        method: "POST",
+        body: data
+      })
+    }),
+
+    deleteNotification: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/deleteNotification`,
+        method: "POST",
+        body: data
+      })
+    }),
+
   }),
 });
 
@@ -256,5 +320,13 @@ export const {
   useSearchMutation,
   useUserProfileMutation,
   useFollowerMutation,
+  useGetMessageMutation,
+  useSendMessageMutation,
+  useRequestMutation,
+  useUnfollowMutation,
+  useSuggestionsQuery,
+  usePaymentMutation,
+  useChatMutation,
+  useDeleteNotificationMutation,
 
 } = userAdminApiSlice;

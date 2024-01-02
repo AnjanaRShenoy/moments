@@ -32,10 +32,11 @@ import AdminUserManagement from "./screens/admin/AdminUserManagement.jsx";
 import PostManagement from "./screens/admin/PostManagement.jsx";
 import CommentManagement from "./screens/admin/CommentManagement.jsx";
 import NotificationScreen from "./screens/user/NotificationScreen.jsx";
-import MessageScreen from "./screens/user/MessageScreen.jsx";
 import { ToastContainer } from "react-bootstrap";
 import Room from "./screens/user/Room.jsx";
-
+import MessageScreen from "./screens/user/MessageScreen.jsX";
+import RequestScreen from "./screens/user/RequestScreen.jsx";
+import { SocketProvider } from "./context/Context.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,8 +54,10 @@ const router = createBrowserRouter(
           <Route path="/fullProfile" element={<FullProfile />} />
           <Route path="/userProfile/:profileId" element={<UserProfile />} />
           <Route path="/notification" element={<NotificationScreen />} />
-          <Route path="/room/:roomId" element={<Room/>}/>
-          <Route path="messages" element={<MessageScreen/>}/>
+          <Route path="/request" element={<RequestScreen />} />
+          <Route path="/room/:roomId" element={<Room />} />
+          <Route path="/messages/:profileId" element={<MessageScreen />} />
+          {/* <Route path="/messages" element={<MessageScreen />} /> */}
         </Route>
       </Route>
 
@@ -85,7 +88,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <ChakraProvider>
     <Provider store={store}>
       <React.StrictMode>
-        <RouterProvider router={router} />
+        <SocketProvider>
+          <RouterProvider router={router} />
+        </SocketProvider>
       </React.StrictMode>
     </Provider>
   </ChakraProvider>
