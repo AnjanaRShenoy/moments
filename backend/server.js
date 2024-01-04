@@ -50,36 +50,45 @@ io.on("connection", (socket) => {
         console.log("User joined Room: " + room)
     })
 
+    
 
-    socket.on("new Message", async (newMessageReceived) => {
-        let chat = newMessageReceived.chat;
+    // socket.on("new Message", async (newMessageReceived) => {
+       
+    //     let chat = newMessageReceived.chat;
 
-        if (!chat.users) return console.log("chat.users not defined");
+    //     if (!chat.users) return console.log("chat.users not defined");
 
-        // Iterate through users in the chat
-        for (const user of chat.users) {
-            if (user._id == newMessageReceived.sender._id) continue;
+    //     // Iterate through users in the chat
+    //     for (const user of chat.users) {
+    //         if (user._id == newMessageReceived.sender._id) continue;
 
-            // Check if the user is online (connected to the socket)
-            const isUserOnline = io.sockets.adapter.rooms.has(user._id);
+    //         // Check if the user is online (connected to the socket)
+    //         const isUserOnline = io.sockets.adapter.rooms.has(user._id);
 
-            // If the user is not online, emit real-time message and store notification
-            if (!isUserOnline) {
-                console.log("not online");
-                socket.in(user._id).emit("message received", newMessageReceived);
+    //         // If the user is not online, emit real-time message and store notification
+    //         if (!isUserOnline) {
+    //             console.log("not online");
+    //             socket.in(user._id).emit("message received", newMessageReceived);
 
-                // Store notification in the database
-                await storeNotification(user._id, newMessageReceived);
-            } else {
-                // The user is online, only emit real-time message
-                socket.in(user._id).emit("message received", newMessageReceived);
-            }
-        }
-    });
-    socket.on("yes chat", (userid) => {
+    //             // Store notification in the database
+    //             await storeNotification(user._id, newMessageReceived);
+    //         } else {
+    //             // The user is online, only emit real-time message
+    //             socket.in(user._id).emit("message received", newMessageReceived);
+    //         }
+    //     }
+    // });
+   
+    socket.on("join notification", (userid) => {
         socket.join(userid)
-        console.log("User joined chat: " + userid)
+        console.log("User joined notification: " + userid)
     })
+
+    // socket.on("count notification", (userInfo) => {
+      
+    //     socket.join(userInfo)
+    //     console.log("User joined count: " + userInfo)
+    // })
 
     socket.off("setup", () => {
         console.log("User Disconnected");

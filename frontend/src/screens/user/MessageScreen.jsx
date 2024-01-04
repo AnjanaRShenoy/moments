@@ -23,7 +23,7 @@ import { useSocket } from "../../context/Context";
 function MessageScreen() {
   const { userInfo } = useSelector((state) => state.auth);
   const { profileId } = useParams();
-  const socket= useSocket()
+  const socket = useSocket();
   const [user, setUser] = useState("");
   const [message, setMessage] = useState("");
   const [usermessage, setUserMessage] = useState("");
@@ -46,7 +46,6 @@ function MessageScreen() {
     fetchData();
   }, []);
 
-
   const [sendMess] = useSendMessageMutation();
   const sendMessage = async (userId) => {
     if (message.trim()) {
@@ -57,7 +56,7 @@ function MessageScreen() {
   };
   const navigate = useNavigate();
   const getMessages = async (profileId) => {
-    try {      
+    try {
       navigate(`/messages/${profileId}`);
       socket.emit("join chat", profileId);
       fetchData();
@@ -69,8 +68,7 @@ function MessageScreen() {
   useEffect(() => {
     if (socket) {
       socket.on("get message", () => {
-        
-        fetchData()
+        fetchData();
       });
     }
   }, [profileId]);
@@ -79,17 +77,15 @@ function MessageScreen() {
     <MDBContainer
       fluid
       className="py-5"
-      style={{ backgroundColor: "black", width: "1000px", marginLeft: "300px" }}
+      style={{ backgroundColor: "black", width: "1000px" }}
     >
       <MDBRow>
-        <MDBCol md="12">
+        <MDBCol md="12"> 
           <MDBCard id="chat3" style={{ borderRadius: "15px" }}>
             <MDBCardBody>
               <MDBRow>
                 <MDBCol md="6" lg="5" xl="4" className="mb-4 mb-md-0">
                   <div className="p-3">
-                    
-
                     <Scrollbars
                       suppressScrollX
                       style={{ position: "relative", height: "400px" }}
@@ -129,9 +125,7 @@ function MessageScreen() {
                                       </div>
                                     </div>
                                     <div className="pt-1">
-                                      <span className="badge bg-danger rounded-pill float-end">
-                                        
-                                      </span>
+                                      <span className="badge bg-danger rounded-pill float-end"></span>
                                     </div>
                                   </a>
                                 </li>
@@ -166,7 +160,7 @@ function MessageScreen() {
                     </Link>
                   </Flex>
                   <hr />
-                  {usermessage  ? (
+                  {usermessage ? (
                     <Scrollbars
                       suppressScrollX
                       style={{ position: "relative", height: "400px" }}

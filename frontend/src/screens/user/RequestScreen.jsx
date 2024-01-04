@@ -3,6 +3,7 @@ import { Flex, Box, Avatar, Text, Badge, Button } from "@chakra-ui/react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useFollowMutation } from "../../slices/userApiSlice";
+import { useSocket } from "../../context/Context";
 
 const RequestScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -17,6 +18,17 @@ const RequestScreen = () => {
       console.log(err);
     }
   };
+  const socket= useSocket()
+  useEffect(() => {
+    if (socket) {
+      socket.emit("join notification", userInfo._id);
+      socket.on("get request", () => {        
+        fetchData();
+      });
+    }
+    fetchData();
+  }, [socket]);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -86,7 +98,9 @@ const RequestScreen = () => {
             </div>
           ))
         ) : (
-          <div>No requests</div>
+          <div style={{ color: "white", fontSize: "25px" }}>
+            No requests to show
+          </div>
         )}
       </Flex>
     

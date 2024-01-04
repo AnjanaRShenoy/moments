@@ -37,7 +37,7 @@ const UserProfile = () => {
   const fetchData = async () => {
     try {
       const response = await userProfile({ profileId, userInfo }).unwrap();
-      
+
       setUser(response.user[0]);
       setPost(response.post);
       setFollowers(response.followers);
@@ -53,9 +53,8 @@ const UserProfile = () => {
     fetchData();
   }, []);
 
-  const [request] = useRequestMutation()
+  const [request] = useRequestMutation();
   const requestUser = async (userId) => {
-    debugger
     try {
       const res = await request({ userInfo, userId }).unwrap();
       refetch();
@@ -67,8 +66,6 @@ const UserProfile = () => {
   const [followMutation] = useFollowerMutation();
   const followUser = async (userId) => {
     try {
-      debugger;
-  
       const res = await followMutation({ userInfo, userId }).unwrap();
       fetchData();
     } catch (err) {

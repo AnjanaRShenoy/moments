@@ -84,56 +84,29 @@ const Hero = () => {
   useEffect(() => {
     if (posts) {
       setPost(posts.posts);
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    socket = io(ENDPOINT);
-  }, []);
-
-  useEffect(() => {
-    if (posts) {
+      setFollowing(posts.follow);
       setRequested(posts.request);
-      console.log(posts.request);
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    if (posts) {
       setOtherPosts(posts.otherPosts);
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    if (posts) {
       setCommentData(posts.comments);
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    if (posts) {
       setUser(posts.userData);
     }
   }, [posts]);
 
-  useEffect(() => {
-    if (posts) {
-      setFollowing(posts.follow);
-    }
-  }, [posts]);
+
 
   useEffect(() => {
     refetch();
   }, [refetch, data]);
 
-
-
-  const submitComment = async (postId,userid) => {
+  const submitComment = async (postId, userid) => {
     try {
-      debugger
       if (comment.trim()) {
-        const res = await postComment({ comment, userInfo, postId, userid }).unwrap();
-       
+        const res = await postComment({
+          comment,
+          userInfo,
+          postId,
+          userid,
+        }).unwrap();
         setComment("");
         refetch();
       }
@@ -141,17 +114,6 @@ const Hero = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    socket = io(ENDPOINT);
-  }, []);
-
-  useEffect(() => {    
-    if (socket) {
-      socket.on("get notification", (get) => {
-        console.log(get);
-      });
-    }
-  }, []);
 
   const savePost = async (postId) => {
     try {
@@ -162,10 +124,9 @@ const Hero = () => {
     }
   };
 
-  const likePost = async (postId) => {
+  const likePost = async (postId, userid) => {
     try {
-      const res = await like({ userInfo, postId }).unwrap();
-      socket.emit("join chat", postId);
+      const res = await like({ userInfo, postId, userid }).unwrap();
       refetch();
     } catch (err) {
       console.log(err);
@@ -178,7 +139,7 @@ const Hero = () => {
 
   const reportHandler = async (postId) => {
     try {
-      debugger;
+  
 
       const res = await report({ userInfo, postId }).unwrap();
       refetch();
@@ -211,7 +172,7 @@ const Hero = () => {
 
   const [deleteComment] = useDeleteCommentMutation();
   const commentDeleteHandler = async (commentId) => {
-    debugger;
+  
     try {
       const res = await deleteComment({ commentId }).unwrap();
 
@@ -224,7 +185,7 @@ const Hero = () => {
   const [request] = useRequestMutation();
   const requestUser = async (userI) => {
     try {
-      debugger;
+
       const userId = userI._id;
       const res = await request({ userInfo, userId }).unwrap();
       refetch();
@@ -232,11 +193,12 @@ const Hero = () => {
       console.log(err);
     }
   };
-
+  
+  
   const [unfollow] = useUnfollowMutation();
   const unfollowUser = async (userI) => {
     try {
-      debugger;
+     
       const userId = userI._id;
 
       const res = await unfollow({ userInfo, userId }).unwrap();
@@ -268,7 +230,7 @@ const Hero = () => {
 
   const sendMessage = async (profileId) => {
     try {
-      debugger;
+  
       navigate(`/messages/${profileId}`);
     } catch (err) {
       console.log(err);
@@ -399,7 +361,7 @@ const Hero = () => {
                     class="bi bi-emoji-heart-eyes-fill"
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
-                      likePost(posts._id);
+                      likePost(posts._id, posts.userId._id);
                     }}
                   ></i>
                 ) : (
@@ -407,7 +369,7 @@ const Hero = () => {
                     class="bi bi-heart"
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
-                      likePost(posts._id);
+                      likePost(posts._id, posts.userId._id);
                     }}
                   ></i>
                 )}
@@ -460,7 +422,7 @@ const Hero = () => {
                 colorScheme="blue"
                 ml={2}
                 onClick={() => {
-                  submitComment(posts._id,posts.userId._id);
+                  submitComment(posts._id, posts.userId._id);
                 }}
               >
                 Post
@@ -658,7 +620,7 @@ const Hero = () => {
                     class="bi bi-emoji-heart-eyes-fill"
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
-                      likePost(posts._id);
+                      likePost(posts._id, posts.userId._id);
                     }}
                   ></i>
                 ) : (
@@ -666,7 +628,7 @@ const Hero = () => {
                     class="bi bi-heart"
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
-                      likePost(posts._id);
+                      likePost(posts._id, posts.userId._id);
                     }}
                   ></i>
                 )}
@@ -719,7 +681,7 @@ const Hero = () => {
                 colorScheme="blue"
                 ml={2}
                 onClick={() => {
-                  submitComment(posts._id,posts.userId._id);
+                  submitComment(posts._id, posts.userId._id);
                 }}
               >
                 Post

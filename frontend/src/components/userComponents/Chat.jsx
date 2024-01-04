@@ -147,7 +147,9 @@ const Chat = () => {
                 </Stack>
               </Card>
             ))
-        : "No friends"}
+        : <div style={{ color: "white", fontSize: "25px" }}>
+        No suggestions
+      </div>}
     </>
   );
 };

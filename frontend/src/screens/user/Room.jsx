@@ -65,4 +65,4 @@ const Room = () => {
 };
 
 export default Room;
-function SizeExample() {}
+

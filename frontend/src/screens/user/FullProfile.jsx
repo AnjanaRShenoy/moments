@@ -93,7 +93,7 @@ const FullProfile = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(`/api/users/getFullProfile?_id=${_id}`);
-     
+
       setUser(response.data.user[0]);
       setPost(response.data.post);
       setFollowers(response.data.followers);
@@ -120,7 +120,6 @@ const FullProfile = () => {
 
   const submitComment = async (postId) => {
     try {
-      debugger;
       if (comment.trim()) {
         const res = await postComment({ comment, userInfo, postId }).unwrap();
         setComment("");
@@ -134,10 +133,10 @@ const FullProfile = () => {
   const [editCaption] = useEditCaptionMutation();
   const submitCaption = async (postId) => {
     try {
-      debugger;
       if (caption.trim()) {
         const res = await editCaption({ caption, userInfo, postId }).unwrap();
-
+        setCentredModal(false);
+        setEdit(false);
         fetchData();
       }
     } catch (err) {
@@ -147,7 +146,6 @@ const FullProfile = () => {
 
   const [deleteComment] = useDeleteCommentMutation();
   const commentDeleteHandler = async (commentId) => {
-    debugger;
     try {
       const res = await deleteComment({ commentId }).unwrap();
       fetchData();
@@ -159,7 +157,6 @@ const FullProfile = () => {
   const [reportComment] = useReportCommentMutation();
   const commentReportHandler = async (commentId) => {
     try {
-      debugger;
       const res = await reportComment({ commentId, userInfo }).unwrap();
       fetchData();
       toast.success("Reported successfully");
@@ -199,9 +196,9 @@ const FullProfile = () => {
   const [staticModal, setStaticModal] = useState(false);
   const removeFollow = () => setStaticModal(!staticModal);
 
-  const [Modal, setModal] = useState(false);
-  const removeFoll = () => setModal(!Modal);
- 
+  const [modalstate, setModal] = useState(false);
+  const removeFoll = () => setModal(!modalstate);
+
   const [removeFollowings] = useRemoveFollowingMutation();
   const unfollow = async (userId) => {
     const res = await removeFollowings({ userId, userInfo }).unwrap();
@@ -366,10 +363,12 @@ const FullProfile = () => {
                         colorScheme="white"
                         aria-label="See menu"
                         icon={<FaTrashAlt />}
-                        onClick={() => {
-                          setDeletePost(filteredPost._id), onOpen();
+                        onClick={() => {                          
+                          setDeletePost(filteredPost._id)
+                           onOpen();
                         }}
                       />
+                      
                       <i
                         class="fas fa-edit"
                         onClick={() => {
@@ -588,6 +587,16 @@ const FullProfile = () => {
               {follower && follower.length > 0 ? (
                 follower.map((follower) => (
                   <Flex justifyContent="space-around" alignItems="baseline">
+                    <Image
+                      style={{
+                        borderRadius: "50px",
+                        height: "35px",
+                        width: "35px", 
+                        marginRight: "10px",
+                      }}
+                      name={follower.name}
+                      src={`../../../${follower.profileImage}`}
+                    />
                     <p>{follower.name}</p>
                     <Button
                       size="xs"
@@ -669,9 +678,7 @@ const FullProfile = () => {
           <MDBModalDialog>
             <MDBModalContent>
               <MDBModalHeader>
-                <MDBModalTitle>
-                  Unfollower?
-                </MDBModalTitle>
+                <MDBModalTitle>Unfollower?</MDBModalTitle>
                 <MDBBtn
                   className="btn-close"
                   color="none"
@@ -699,13 +706,11 @@ const FullProfile = () => {
       )}
 
       {removeFollowing && (
-        <MDBModal staticBackdrop tabIndex="-1" open={Modal} setOpen={setModal}>
+        <MDBModal staticBackdrop tabIndex="-1" open={modalstate} setOpen={setModal}>
           <MDBModalDialog>
             <MDBModalContent>
               <MDBModalHeader>
-                <MDBModalTitle>
-                  Unfollowing?
-                </MDBModalTitle>
+                <MDBModalTitle>Unfollowing?</MDBModalTitle>
                 <MDBBtn
                   className="btn-close"
                   color="none"

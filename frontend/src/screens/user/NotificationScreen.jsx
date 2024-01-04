@@ -5,13 +5,14 @@ import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import { useDeleteNotificationMutation } from "../../slices/userApiSlice";
 import { toast } from "react-toastify";
-const ENDPOINT = "http://localhost:5000";
-var socket, selectedChatCompare;
+import { useSocket } from "../../context/Context.jsx";
+
 
 const NotificationScreen = () => {
   const [notification, setNotification] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
+  const socket = useSocket();
   const fetchData = async () => {
     try {
       const res = await axios.get(
@@ -23,21 +24,19 @@ const NotificationScreen = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (socket) {
-      socket.on("get notification", (get) => {
-        console.log(get);
+      socket.emit("join notification", userInfo._id);
+      socket.on("get notification", () => {        
+        fetchData();
       });
     }
-  }, []);
+    fetchData();
+  }, [socket]);
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
-
     if (e.target.checked) {
       deleteNotification();
     }

@@ -12,7 +12,7 @@ function App({ admin }) {
     <Flex flexDirection={{ md: "column", base: "column" }}>
       {admin ? <AdminSidebar /> : <UserSidebar />}
       <ToastContainer />
-      <Flex py={10} justifyContent={{ base: "space-around" }} style={{backgroundColor:"black", minHeight:"100vh"}}>
+      <Flex py={10} className="hel" justifyContent={{ base: "space-around" , md:"space-around"}} style={{backgroundColor:"black", minHeight:"100vh"}}>
         <Outlet />
       </Flex>
     </Flex>

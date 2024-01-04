@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import Message from "../models/messageModel.js"
 import Chat from "../models/chatModel.js";
+import mongoose from "mongoose";
 const getMessage = asyncHandler(async (req, res) => {
     try {
 
@@ -25,6 +26,16 @@ const getMessage = asyncHandler(async (req, res) => {
                 }
             ]
         }).populate("senderId")
+
+        const read = await Message.updateMany({ senderId: touser, receiverId: currentuser }, { isRead: true })
+        // const unreadMessages= await Message.find({receiverId: currentuser,isRead:false})
+        // const unReadCount= unreadMessages.length
+        
+        // const userId = new mongoose.Types.ObjectId(touser);
+        // const currentId = new mongoose.Types.ObjectId(currentuser);
+        // const unReadCount = await Chat.findOneAndUpdate({ users: [userId, currentId] })
+        
+
         const uniqueSenderIds = await Message.distinct('senderId', {
             $or: [
                 { senderId: { $ne: currentuser }, receiverId: currentuser },
@@ -33,6 +44,7 @@ const getMessage = asyncHandler(async (req, res) => {
         });
 
         const uniqueSenders = await User.find({ _id: { $in: uniqueSenderIds } }).select("name profileImage");
+
 
         res.status(200).json({ user, message, uniqueSenders })
     } catch (err) {
@@ -62,7 +74,8 @@ const sendMessage = asyncHandler(async (req, res) => {
             message: req.body.message
         })
         req.app.get('io').in(req.body.userInfo._id).emit("get message")
-        
+        req.app.get('io').in(req.body.userInfo._id).emit("get messageCount")
+
         res.status(200).json(message)
     } catch (err) {
         console.log(err);

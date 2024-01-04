@@ -9,7 +9,10 @@ const chatSchema = mongoose.Schema(
         latestMessage: {
             type: String,
            
-        },             
+        },  
+        unReadMessageCount:{
+            type:Number
+        }           
     },{
         timeStamps:true,
     }

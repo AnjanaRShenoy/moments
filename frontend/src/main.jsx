@@ -68,11 +68,8 @@ const router = createBrowserRouter(
         <Route path="/admin/create-user" element={<AdminCreateUser />} />
         <Route path="/admin/edit-user/:user" element={<AdminEditUser />} />
         <Route path="" element={<PrivateRouteAdmin />}>
-          <Route path="/admin/" element={<HomeAdmin />} />
-          <Route
-            path="/admin/userManagement"
-            element={<AdminUserManagement />}
-          />
+          <Route path="/admin/" element={<AdminUserManagement />} />
+          
           <Route path="/admin/postManagement" element={<PostManagement />} />
           <Route
             path="/admin/commentManagement"

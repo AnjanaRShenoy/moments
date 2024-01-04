@@ -21,6 +21,7 @@ const request = asyncHandler(async (req, res) => {
           receiver: req.body.userId,
         })
       }
+      req.app.get('io').in(req.body.userId).emit("get request","reqiested")
       res.status(200).json(request)
     } catch (err) {
       console.log(err);

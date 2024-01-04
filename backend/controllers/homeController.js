@@ -65,11 +65,11 @@ const listPost = asyncHandler(async (req, res) => {
 
 const comment = asyncHandler(async (req, res) => {
     try {
-        console.log(req.body.userid);
+
 
         const userInfo = req.body.userInfo
         const userId = userInfo._id
-        
+
         const comment = await Comment.create({
             userId: userId,
             comment: req.body.comment,
@@ -78,8 +78,6 @@ const comment = asyncHandler(async (req, res) => {
         const post = await Post.findOne({ _id: req.body.postId })
             .populate("post")
 
-       
-
         const notification = await Notification.create({
             type: "comment",
             content: "has commented on your post",
@@ -87,8 +85,9 @@ const comment = asyncHandler(async (req, res) => {
             sender: userInfo._id,
             receiver: post.userId
         })
-
+       
         req.app.get('io').in(req.body.userid).emit("get notification")
+        
         res.status(200).json(comment)
 
     } catch (err) {
@@ -118,6 +117,8 @@ const likePost = asyncHandler(async (req, res) => {
                 sender: userInfo,
                 resource: [postId]
             })
+         
+            req.app.get('io').in(req.body.userid).emit("get notification", notification)
             res.status(200).json({ message: "Post has been unliked" })
         } else {
             const likePost = await Post.findOneAndUpdate(
@@ -136,7 +137,7 @@ const likePost = asyncHandler(async (req, res) => {
                 receiver: post.userId
 
             })
-
+            req.app.get('io').in(req.body.userid).emit("get notification", notification)
             res.status(200).json({ message: "Post has been liked" })
         }
     } catch (err) {
@@ -205,6 +206,7 @@ const follow = asyncHandler(async (req, res) => {
                     sender: user,
                     receiver: userInfo,
                 })
+                
                 res.status(200).json({ message: "Unfollowed successfully" })
             } else {
 
@@ -226,7 +228,7 @@ const follow = asyncHandler(async (req, res) => {
                 })
 
                 const followRequest = await Request.findOneAndDelete({ sender: user, receiver: userInfo })
-
+                req.app.get('io').in(userInfo).emit("get request")
                 res.status(200).json({ message: "Followed successfully" })
             }
         } else {
@@ -234,6 +236,7 @@ const follow = asyncHandler(async (req, res) => {
             const userInfo = req.body.userInfo._id
 
             const followRequest = await Request.findOneAndDelete({ sender: user, receiver: userInfo })
+            req.app.get('io').in(userInfo).emit("get request")
             res.status(200).json({ message: "declined " })
         }
 
@@ -345,17 +348,10 @@ const suggestions = asyncHandler(async (req, res) => {
         for (var i = 0; i < mutualFollower.length; i++) {
             for (var j = 0; j < mutualFollower[i].following.length; j++) {
                 const user = await User.findOne({ _id: mutualFollower[i].following[j] })
-
                 qu.push(user)
-
-             
             }
         }
-
-
         res.json(qu);
-
-
     } catch (err) {
         console.log(err);
     }

@@ -58,7 +58,7 @@ const RegisterScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const submitHandler = async (values) => {
-       debugger                                            //to submit the signup form, validate and send to back end
+                                        //to submit the signup form, validate and send to back end
     setResendTimer(t);
 
     const { name, email, phoneNumber, password, confirmPassword } = values;
@@ -115,7 +115,7 @@ const RegisterScreen = () => {
   }, [resendTimer]);
 
   const submitOtpHandler = async (e) => {
-    debugger
+
     e.preventDefault();
     
     try {

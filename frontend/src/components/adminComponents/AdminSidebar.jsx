@@ -22,8 +22,8 @@ import { Link } from "react-router-dom";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 
 const LinkItems = [
-  { name: "Dashboard", icon: SiSocialblade, url: "/admin/" },
-  { name: "User Management", icon: FaUsers, url: "/admin/userManagement" },
+  
+  { name: "User Management", icon: FaUsers, url: "/admin/" },
   { name: "Post management", icon: CiSignpostDuo1, url: "/admin/postManagement" },
   { name: "Comment Management", icon: FaRegComment, url: "/admin/commentManagement" },
   // { name: "Settings", icon: FiSettings, url: "/admin/" },
