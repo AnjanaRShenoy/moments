@@ -17,8 +17,6 @@ import { request, getRequest } from "../controllers/requestController.js";
 import { auth } from "../middleware/authMiddleware.js";
 import { upload } from "../config/multer.js";
 
-
-
 const router = express.Router();
 
 router.post("/", registerUser);
@@ -74,7 +72,7 @@ router.delete('/removeFollower', auth, removeFollower)
 
 router.delete('/removeFollowing', auth, removeFollowing)
 
-router.post('/search', auth, search)
+router.get('/search', auth, search)
 
 router.post('/getMessage', auth, getMessage)
 

@@ -325,7 +325,8 @@ const editCaption = asyncHandler(async (req, res) => {
 
 const search = asyncHandler(async (req, res) => {
     try {
-        const search = req.body.search
+    console.log(req.query);
+        const search = req.query.search
         const searchRegex = new RegExp(search, "i")
         const user = await User.find({ name: { $regex: searchRegex } })
         res.status(200).json(user)

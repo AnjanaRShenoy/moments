@@ -22,7 +22,7 @@ const httpServer = createServer(app)
 const io = new Server(httpServer, {
     pingTimeout: 60000,
     cors: {
-        origin: "http://localhost:3000",
+        origin: process.env.SOCKETF,
     }
 })
 app.set('io', io)
