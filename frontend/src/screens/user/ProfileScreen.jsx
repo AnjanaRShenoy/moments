@@ -28,7 +28,7 @@ export default function UserProfileEdit() {
   const dispatch = useDispatch();
   const fileInput = useRef(null);
 
-  const [profileImageUpdate] = useUpdateProfileImageMutation();
+  
 
   const [name, setName] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");

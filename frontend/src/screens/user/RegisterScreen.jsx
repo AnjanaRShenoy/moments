@@ -68,7 +68,6 @@ const RegisterScreen = () => {
       setOtppass(password);
     try {
       const res = await register({
-        //response brought from backend
         name,
         email,
         phoneNumber,
