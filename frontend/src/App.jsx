@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Box, ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
 import AdminSidebar from "./components/adminComponents/AdminSidebar";
 import UserSidebar from "./components/userComponents/UserSidebar";
 
@@ -10,6 +10,7 @@ import UserSidebar from "./components/userComponents/UserSidebar";
 // eslint-disable-next-line react/prop-types, no-unused-vars
 function App({ admin }) {
   return (
+<<<<<<< HEAD
     <div style={{ position: "relative",backgroundColor:"#f0f0f0", minHeight:"100vh"}}>
       <div
         style={{
@@ -44,6 +45,15 @@ function App({ admin }) {
         </div>
       </div>
     </div>
+=======
+    <Flex flexDirection={{ md: "column", base: "column" }}>
+      {admin ? <AdminSidebar /> : <UserSidebar />}
+      <ToastContainer />
+      <Flex py={10} className="hel" justifyContent={{ base: "space-around" , md:"space-around"}} style={{backgroundColor:"black", minHeight:"100vh"}}>
+        <Outlet />
+      </Flex>
+    </Flex>
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   );
 }
 

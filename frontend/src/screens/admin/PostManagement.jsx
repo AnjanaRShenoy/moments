@@ -1,5 +1,6 @@
 import {
   Card,
+<<<<<<< HEAD
   Text,
   IconButton,
   Avatar,
@@ -7,22 +8,35 @@ import {
   Flex,
   CardHeader,
   CardBody,
+=======
+  IconButton,
+  Box,
+  Flex,
+  CardHeader,
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   CardFooter,
   Heading,
   Image,
   Button,
+<<<<<<< HEAD
   Menu,
   MenuButton,
   MenuList,
   Spinner,
   MenuItem,
   Input,
+=======
+  Spinner,
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
+<<<<<<< HEAD
   ModalBody,
+=======
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   ModalCloseButton,
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
@@ -33,16 +47,28 @@ import {
 } from "../../slices/adminApiSlice";
 
 import { useDisclosure } from "@chakra-ui/react";
+<<<<<<< HEAD
 
 const PostManagement = () => {
   const [remove] = usePostDeleteMutation();
+=======
+import { useState } from "react";
+
+const PostManagement = () => {
+  const [deletePost, setDeletePost] = useState("");
+  const [remove] = usePostDeleteMutation();
+
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   const { data: posts, error, refetch } = useGetPostQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const removePost = async (postId) => {
     try {
+<<<<<<< HEAD
        
+=======
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       const res = await remove({ postId }).unwrap();
     } catch (err) {
       console.log(err);
@@ -70,6 +96,7 @@ const PostManagement = () => {
             <CardHeader>
               <Flex spacing="4">
                 <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+<<<<<<< HEAD
           
                   <Image
                     style={{
@@ -82,6 +109,19 @@ const PostManagement = () => {
                     name={posts.userData.name}
                     src={`../../../${posts.userData.profileImage}`}
                   />
+=======
+                  {/* <Image
+                      style={{
+                        borderRadius: "50px",
+                        height: "35px",
+                        width: "35px",
+                        marginRight: "10px",
+                      }}
+                      
+                      name={posts.userData.name}
+                      src={`../../../${posts.userData.profileImage}`}
+                    /> */}
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
                   <Box>
                     <Heading size="sm">{posts.userData.name}</Heading>
@@ -94,6 +134,7 @@ const PostManagement = () => {
                   colorScheme="white"
                   aria-label="See menu"
                   icon={<FaTrashAlt />}
+<<<<<<< HEAD
                   onClick={onOpen}
                 />
 
@@ -121,6 +162,12 @@ const PostManagement = () => {
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
+=======
+                  onClick={() => {
+                    setDeletePost(posts._id), onOpen();
+                  }}
+                />
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
               </Flex>
             </CardHeader>
 
@@ -131,6 +178,7 @@ const PostManagement = () => {
               src={`../../../${posts.post}`}
               alt=""
             />
+<<<<<<< HEAD
 
             {/* <CardBody>
               {posts.bio && <Text>{posts.bio}</Text>}
@@ -179,6 +227,8 @@ const PostManagement = () => {
                 },
               }}
             ></CardFooter> */}
+=======
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
             <CardFooter></CardFooter>
           </Card>
         ))
@@ -191,6 +241,32 @@ const PostManagement = () => {
           size="xl"
         />
       )}
+<<<<<<< HEAD
+=======
+      {deletePost && (
+        <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Are you sure you want to delete the post?</ModalHeader>
+            <ModalCloseButton />
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={() => {
+                  removePost(deletePost);
+                  {onClose()}
+                }}
+              >
+                Yes
+              </Button>
+              <Button onClick={onClose}>No</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
     </div>
   );
 };

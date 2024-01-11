@@ -22,11 +22,19 @@ import { Link } from "react-router-dom";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 
 const LinkItems = [
+<<<<<<< HEAD
   { name: "Dashboard", icon: SiSocialblade, url: "/admin/" },
   { name: "User Management", icon: FaUsers, url: "/admin/userManagement" },
   { name: "Post management", icon: CiSignpostDuo1, url: "/admin/postManagement" },
   { name: "Comment Management", icon: FaRegComment, url: "/admin/" },
   { name: "Settings", icon: FiSettings, url: "/admin/" },
+=======
+  
+  { name: "User Management", icon: FaUsers, url: "/admin/" },
+  { name: "Post management", icon: CiSignpostDuo1, url: "/admin/postManagement" },
+  { name: "Comment Management", icon: FaRegComment, url: "/admin/commentManagement" },
+  // { name: "Settings", icon: FiSettings, url: "/admin/" },
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 ];
 
 export default function AdminSidebar() {

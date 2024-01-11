@@ -9,12 +9,17 @@ const postSchema = mongoose.Schema(
         },
         caption: {
             type: String,
+<<<<<<< HEAD
             default: "",
+=======
+            default:""
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
         },
         post: {
             type: String,
             required: true
         },
+<<<<<<< HEAD
         like: [{
             userId: {
                 type: mongoose.Schema.Types.ObjectId,
@@ -27,6 +32,15 @@ const postSchema = mongoose.Schema(
                 ref: 'User'
             }
         }],
+=======
+        like:[{
+            userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            }
+        }],
+        report:[],
+
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
         createdAt: {
             type: Date,
             default: Date.now(),

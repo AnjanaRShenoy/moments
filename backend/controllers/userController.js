@@ -3,13 +3,10 @@ import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
 import Otp from "../models/otpModel.js";
 import nodemailer from 'nodemailer';
-import Post from "../models/postModel.js";
-import Comment from "../models/commentModel.js";
-import SavePost from "../models/savePostModel.js";
+import Follow from "../models/followModel.js"
+
 
 import { APP_PASSWORD, ADMIN_EMAIL } from "../config/connections.js";
-
-
 
 // to login the user
 const authUser = asyncHandler(async (req, res) => {
@@ -38,6 +35,8 @@ const authUser = asyncHandler(async (req, res) => {
         email: user.email,
         // profileImage: user.profileImage,
       });
+      const followExist = await Follow.findOne({ userId: user._id })
+      if (!followExist) { const createUser = await Follow.create({ userId: user._id }) }
     } else {
       res.status(400)
       throw new Error("Invalid email and password")
@@ -89,12 +88,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // to register through google mail directly
   if (gmail) {
-    console.log(email);
+
     const userExist = await User.findOne({ email: email });
 
     if (userExist) {
       res.status(400);
-      console.log("User already exist");
+
       throw new Error("User already exist");
     }
 
@@ -102,6 +101,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name,
       email
     });
+    const createUser = await Follow.create({ userId: user._id })
 
     if (user) {
       generateToken(res, user._id);
@@ -124,18 +124,12 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new Error("User already exist");
     }
 
-    const otpExist = await Otp.findOne({ email: req.body.email });
+
     const otp = Math.floor(1000 + Math.random() * 9000)
-    if (otpExist) {
-      const resendOTP = await Otp.findOneAndDelete({ email: req.body.email })
 
-      sendVerifyMail(req.body.name, req.body.email, otp)
 
-      res.status(200).json({ message: "Otp sent" })
-    } else {
+    sendVerifyMail(req.body.name, req.body.email, otp)
 
-      sendVerifyMail(req.body.name, req.body.email, otp)
-    }
 
     const user = await Otp.create({                       //saving the user data in otp collection
       name,
@@ -152,18 +146,45 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+const resendOtp = asyncHandler(async (req, res) => {
+  try {
+    const { otpname, otpemail, otpno, otppass } = req.body;
+
+    const otpExist = await Otp.findOne({ email: req.body.otpemail });
+    const otp = Math.floor(1000 + Math.random() * 9000)
+
+    const resendOTP = await Otp.findOneAndDelete({ email: req.body.otpemail })
+
+    sendVerifyMail(req.body.otpname, req.body.otpemail, otp)
+    const user = await Otp.create({                       //saving the user data in otp collection
+      name: otpname,
+      email: otpemail,
+      phoneNumber: otpno,
+      otp,
+      createdAt: Date.now(),
+
+    });
+
+    res.status(200).json({ message: "Otp sent" })
+
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 // to check the otp
 const checkOtp = asyncHandler(async (req, res) => {
   try {
-    const otpUser = await Otp.findOne({ email: req.body.email });
+
+    const otpUser = await Otp.findOne({ email: req.body.otpemail });
 
     if (otpUser.otp == req.body.otp) {
 
       const user = await User.create({                       //saving the user data in otp collection
-        name: req.body.name,
-        email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
-        password: req.body.password
+        name: req.body.otpname,
+        email: req.body.otpemail,
+        phoneNumber: req.body.otpno,
+        password: req.body.otppass
       });
 
       res.status(201).json({
@@ -184,230 +205,91 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User Logged Out" });
 });
 
-
-
-// to get the user profile for showing profile
-// const getUserProfile = asyncHandler(async (req, res) => {
-//   const user = {
-//     _id: req.user._id,
-//     name: req.user.name,
-//     email: req.user.email,
-
-//   };
-//   res.status(200).json(user);
-// });
-
-// to make changes in profile
-const updateUserProfile = asyncHandler(async (req, res) => {
-console.log(req.body);
-  const user = await User.findById(req.body._id);
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-  user.bio= req.body.bio || user.bio
-    const updatedUser = await user.save();
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      phoneNumber: updatedUser.phoneNumber,
-      bio: updatedUser.bio,
- 
-    });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
-  }
-});
-
-// to change profile picture
-const updateUserImage = asyncHandler(async (req, res) => {
+const checkUserBlocked = asyncHandler(async (req, res) => {
   try {
-
-    if (req.file) {
-      User.findByIdAndUpdate(
-        { _id: req.body.id },
-        // { profileImage: req.file.filename }
-      ).catch(err => {
-        console.log(err.message);
-      })
-      res.status(200).json({ profileImage: req.file.filename })
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-});
-
-// to save the created post in database
-const createPost = asyncHandler(async (req, res) => {
-  try {
-
-    const userInfo = JSON.parse(req.body.userInfo)
-    const userId = userInfo._id;
-    if (req.file) {
-      const post = await Post.create({
-        userId: userId,
-        post: req.file.filename
-      })
-        .catch(err => {
-          console.log(err.message);
-        })
-      res.status(200).json({ post: req.file.filename })
-    }
-  } catch (err) {
-    console.log(err);
-  }
-})
-
-// to show all the posts in home page
-const listPost = asyncHandler(async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate("userId")                     //to retrieve the user name and details 
-
-    // const comments = await Comment.find()     //to retrieve the user and post details 
-    //   .populate("userId postId")
-
-    // const saved= await SavePost.find()
-
-    res.status(200).json(posts)
-  } catch (err) {
-    console.log(err);
-  }
-})
-
-const comment = asyncHandler(async (req, res) => {
-  try {
-
-    const userInfo = req.body.userInfo
-    const userId = userInfo._id
-    const comment = await Comment.create({
-      userId: userId,
-      comment: req.body.comment,
-      postId: req.body.postId
-    })
-    res.status(200).json(comment)
-  } catch (err) {
-    console.log(err);
-  }
-})
-
-// to get the user profile for showing profile details
-const profile = asyncHandler(async (req, res) => {
-  try {
-    const { _id } = req.query;
-    console.log(_id);
-    const user = await User.findById(_id)
-    res.status(200).json(user)
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-
-
-const savePost = asyncHandler(async (req, res) => {
-  try {
-
-    const userInfo = req.body.userInfo
-    const postId = req.body.postId
-
-    const postExist = await SavePost.findOne({ postId: postId });
-
-    if (postExist) {
-      const unSave = await SavePost.deleteOne({ postId })
-      res.status(200).json({ message: "Post has been unsaved" })
+    const user = await User.findById({ _id: req.query._id })
+    if (user.isBlocked === true) {
+      var Blocked = true
     } else {
-      const savePost = await SavePost.create({
-        userId: userInfo._id,
-        postId: postId
-      })
-      res.status(200).json({ message: "Post has been saved" })
+      var Blocked = false
     }
+    res.json({ Blocked })
   } catch (err) {
     console.log(err);
   }
 })
+// const follower = asyncHandler(async (req, res) => {
+//   try {
+//     if (req.body.response === "accept") {
+//       const user = req.body.userId
 
-const getSavedPost = asyncHandler(async (req, res) => {
-  try {
-    console.log(req.query, 'lllllllllll');
+//       const userInfo = req.body.userInfo._id
 
-    const savedPost = await SavePost.find()
-      .populate("userId postId")
+//       const userExist = await Follow.findOne({ userId: userInfo })
+//       if (!userExist) {
+//         const createUser = await Follow.create({ userId: userInfo })
+//       }
 
-    res.status(200).json(savedPost)
-  } catch (err) {
-    console.log(err);
-  }
-})
+//       const followerExist = await Follow.findOne({ userId: user })
+//       if (!followerExist) {
+//         const createFollower = await Follow.create({ userId: userExist })
+//       }
 
-const likePost = asyncHandler(async (req, res) => {
-  try {
-    const userInfo = req.body.userInfo
-    const postId = req.body.postId
+//       const follow = await Follow.findOne({
+//         userId: userInfo,
+//         following: { $in: user }
+//       });
 
-    const likeExist = await Post.findOne(
-      {
-        _id: postId,
-        like: { $elemMatch: { userId: userInfo._id } }
-      });
+//       if (follow) {
+//         const unfollow = await Follow.findOneAndUpdate(
+//           { userId: userInfo },
+//           { $pull: { following: user } },
+//           { new: true })
+//         const unfollower = await Follow.findOneAndUpdate(
+//           { userId: user },
+//           { $pull: { follower: userInfo } },
+//           { new: true })
+//         const notification = await Notification.findOneAndDelete({
+//           type: "follow",
+//           sender: userInfo,
+//           receiver: user,
+//         })
+//         res.status(200).json({ message: "Unfollowed successfully" })
+//       } else {
 
-    if (likeExist) {
-      const unLike = await Post.findOneAndUpdate(
-        { _id: postId },
-        { $pull: { like: { userId: userInfo._id } } },
-        { new: true })
-      res.status(200).json({ message: "Post has been unliked" })
-    } else {
-      const likePost = await Post.findOneAndUpdate(
-        { _id: postId },
-        { $push: { like: { userId: userInfo._id } } },
-        { upsert: true, new: true }
-      )
-      res.status(200).json({ message: "Post has been liked" })
-    }
-  } catch (err) {
-    console.log(err);
-  }
-})
+//         const follow = await Follow.findOneAndUpdate(
+//           { userId: userInfo },
+//           { $push: { following: user } },
+//           { new: true })
+//         const follower = await Follow.findOneAndUpdate(
+//           { userId: user },
+//           { $push: { follower: userInfo } },
+//           { new: true }
+//         )
+//         const notification = await Notification.create({
+//           type: "follow",
+//           content: " has started following you",
+//           // resource:[user._id],
+//           sender: userInfo,
+//           receiver: user
+//         })
+//         res.status(200).json({ message: "Followed successfully" })
+//       }
+//     } else {
+//       const user = req.body.userId
+//       const userInfo = req.body.userInfo._id
 
-const reportPost = asyncHandler(async (req, res) => {
-  try {
-    const userInfo = req.body.userInfo
-    const postId = req.body.postId
-    const posts = await Post.findOne({ _id: postId })
-    const alreadyReported = posts.report.some(report => report.userId.equals(userInfo._id));
-    if (alreadyReported) {
-      res.status(200).json({ message: "You have reported the post" })
-    } else {
-      const post = await Post.findByIdAndUpdate(
-        { _id: postId },
-        { $push: { report: { userId: userInfo._id } } },
-        { upsert: true, new: true }
-      );
-
-      res.status(200).json({ message: "You have reported the post" })
-    }
-
-  } catch (err) {
-    console.log(err);
-  }
-})
-
+//       const followRequest = await Request.findOneAndDelete({ sender: user, receiver: userInfo })
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// })
 export {
   authUser,
   registerUser,
   logoutUser,
-  // getUserProfile,
-  updateUserProfile,
-  updateUserImage,
+  resendOtp,
   checkOtp,
-  createPost,
-  listPost,
-  comment,
-  profile,
-  savePost,
-  getSavedPost,
-  likePost,
-  reportPost,
+  checkUserBlocked, 
 };

@@ -122,4 +122,8 @@ const HomeAdmin = () => {
 };
 
 
+<<<<<<< HEAD
 export default HomeAdmin;
+=======
+export default HomeAdmin;
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125

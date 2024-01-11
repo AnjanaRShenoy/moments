@@ -6,6 +6,7 @@ export const apiSlice = createApi({
   baseQuery,
   tagTypes: ["User"],
   endpoints: (builder) => ({}),
+<<<<<<< HEAD
   
   onError: (error) => {
     console.log("errorrrrrrrrrrr1");
@@ -15,5 +16,9 @@ export const apiSlice = createApi({
       window.location.href = '/auth';
     }
   },
+=======
+
+
+>>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 });
 
