@@ -11,12 +11,7 @@ import adminRoute from "./routes/adminRoutes.js"
 import cors from 'cors'
 import { Server } from "socket.io";
 import { createServer } from "http";
-import mongoose from "mongoose";
 
-// import fileUpload from "express-fileupload";
-// import morgan from "morgan";
-
-// const conn= mongoose.connect("mongodb+srv://shenoyanjana96:moments@moments.o0rfqoi.mongodb.net/moments")
 connectDB()
 const app = express()
 const httpServer = createServer(app)
@@ -50,46 +45,11 @@ io.on("connection", (socket) => {
         socket.join(room)
         console.log("User joined Room: " + room)
     })
-
-    
-
-    // socket.on("new Message", async (newMessageReceived) => {
-       
-    //     let chat = newMessageReceived.chat;
-
-    //     if (!chat.users) return console.log("chat.users not defined");
-
-    //     // Iterate through users in the chat
-    //     for (const user of chat.users) {
-    //         if (user._id == newMessageReceived.sender._id) continue;
-
-    //         // Check if the user is online (connected to the socket)
-    //         const isUserOnline = io.sockets.adapter.rooms.has(user._id);
-
-    //         // If the user is not online, emit real-time message and store notification
-    //         if (!isUserOnline) {
-    //             console.log("not online");
-    //             socket.in(user._id).emit("message received", newMessageReceived);
-
-    //             // Store notification in the database
-    //             await storeNotification(user._id, newMessageReceived);
-    //         } else {
-    //             // The user is online, only emit real-time message
-    //             socket.in(user._id).emit("message received", newMessageReceived);
-    //         }
-    //     }
-    // });
    
     socket.on("join notification", (userid) => {
         socket.join(userid)
         console.log("User joined notification: " + userid)
-    })
-
-    // socket.on("count notification", (userInfo) => {
-      
-    //     socket.join(userInfo)
-    //     console.log("User joined count: " + userInfo)
-    // })
+    })    
 
     socket.off("setup", () => {
         console.log("User Disconnected");
@@ -110,8 +70,6 @@ io.on("connection", (socket) => {
         }
     });
 })
-
-
 
 // app.use(morgan('dev'))
 app.use(express.json())
