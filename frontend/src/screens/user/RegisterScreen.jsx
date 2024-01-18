@@ -4,15 +4,11 @@ import { Form } from "react-bootstrap";
 import Loader from "../../components/mutualComponents/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-<<<<<<< HEAD
-import { useRegisterMutation, useOtpMutation } from "../../slices/userApiSlice";
-=======
 import {
   useRegisterMutation,
   useOtpMutation,
   useResendOtpMutation,
 } from "../../slices/userApiSlice";
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 import { setCredentials } from "../../slices/authSlice";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
@@ -28,15 +24,11 @@ import {
   Button,
   Heading,
   useColorModeValue,
-<<<<<<< HEAD
-useToast
-=======
   useToast,
   Checkbox,
   FormErrorMessage,
   VStack,
   Text,
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 } from "@chakra-ui/react";
 import { Field, Formik, ErrorMessage } from "formik";
 
@@ -65,47 +57,6 @@ const RegisterScreen = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-<<<<<<< HEAD
-  const submitHandler = async (e) => {
-    //to submit the signup form, validate and send to back end
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      Toast({
-        title: "Passwords do not match",
-        status: "error",
-        isClosable: true,
-      });
-    } else if (
-      !name.trim() ||
-      !email.trim() ||
-      !phoneNumber.trim() ||
-      !password.trim() ||
-      !confirmPassword.trim()
-    ) {
-      Toast({
-        title: "Empty fields, please enter value",
-        status: "error",
-        isClosable: true,
-      });
-    } else {
-      try {
-        const res = await register({
-          //response brought from backend
-          name,
-          email,
-          phoneNumber,
-          password,
-        }).unwrap();
-        setOtppage(true); //to bring the otp page
-      } catch (err) {
-        Toast({
-          title: err?.data?.message || err.error,
-          status: "error",
-          isClosable: true,
-        });
-      }
-=======
   const submitHandler = async (values) => {
                                         //to submit the signup form, validate and send to back end
     setResendTimer(t);
@@ -147,26 +98,25 @@ const RegisterScreen = () => {
         status: "error",
         isClosable: true,
       });
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
     }
   };
-  const resendOtp = async (e) => {
-    try {
-      const res = await register({
-        name,
-        email,
-        phoneNumber,
-        password,
-      }).unwrap();
+  // const resendOtp = async (e) => {
+  //   try {
+  //     const res = await register({
+  //       name,
+  //       email,
+  //       phoneNumber,
+  //       password,
+  //     }).unwrap();
       
-    } catch {
-      toast({
-          title: err?.data?.message || err.error,
-          status: "error",
-          isClosable: true,
-        });
-    }
-  };
+  //   } catch {
+  //     toast({
+  //         title: err?.data?.message || err.error,
+  //         status: "error",
+  //         isClosable: true,
+  //       });
+  //   }
+  // };
 
   useEffect(() => {
     const timerInterval = setInterval(() => {
@@ -183,15 +133,6 @@ const RegisterScreen = () => {
   const submitOtpHandler = async (e) => {
 
     e.preventDefault();
-<<<<<<< HEAD
-    try {
-      const res = await Otp({
-        name,
-        phoneNumber,
-        password,
-        email,
-        otp,
-=======
     
     try {
       const res = await Otp({
@@ -201,7 +142,6 @@ const RegisterScreen = () => {
         otppass,
         otp
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       }).unwrap();
       navigate("/login");
     } catch (err) {
@@ -247,43 +187,6 @@ const RegisterScreen = () => {
             boxShadow={"lg"}
             p={8}
           >
-<<<<<<< HEAD
-            <Form onSubmit={submitHandler}>
-              <Stack spacing={4}>
-                <FormControl id="email">
-                  <FormLabel>Name</FormLabel>
-                  <Input
-                    type="name"
-                    placeholder="Enter name"
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="phoneNumber">
-                  <FormLabel>Phone Number</FormLabel>
-                  <Input
-                    type="phoneNumber"
-                    placeholder="Enter phone number"
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="email">
-                  <FormLabel>Email address</FormLabel>
-                  <Input
-                    type="email"
-                    placeholder="Enter email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl id="password">
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={password ? "text" : "password"}
-                      placeholder="Enter password"
-                      onChange={(e) => setPassword(e.target.value)}
-                      onkeyup="validatePassword"
-                    />
-=======
             <Formik
               initialValues={{
                 name: "",
@@ -443,7 +346,6 @@ const RegisterScreen = () => {
                       />
                       <FormErrorMessage>{errors.password}</FormErrorMessage>
                     </FormControl>
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
                     <Button
                       type="submit"
@@ -534,15 +436,6 @@ const RegisterScreen = () => {
                   >
                     Submit
                   </Button>
-<<<<<<< HEAD
-                  <Link
-                    onClick={resendOtp}
-                    cursor={"cursor"}
-                    color={"blue.400"}
-                  >
-                    Resend Otp
-                  </Link>
-=======
 
                   <div> { resendTimer > 0 ? `Resend OTP in ${resendTimer}`:( null)}
                   {resendTimer <= 0 && (
@@ -556,7 +449,6 @@ const RegisterScreen = () => {
                     </Link>
                   )}
                   </div>
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                 </Stack>
               </Stack>
             </Form>

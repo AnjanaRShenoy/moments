@@ -184,4 +184,3 @@ export {
   getComment,
   deleteComment
 };
-

@@ -9,10 +9,22 @@ services:
 
   frontend:
     build: ./frontend
-    ports:
-      - "3000:3000"
     depends_on:
       - backend
+    volumes:
+    - frontend:/app/build
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - static:/static
+      - C:/Users/varah/Desktop/Moments/frontend:/var/www/frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
 
   mongo: 
     image: mongo:7.0
@@ -21,7 +33,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: Anjanashenoy310
       MONGO_INITDB_DATABASE: moments
 
-      # MONGO_URI: mongodb+srv://shenoyanjana96:moments@moments.o0rfqoi.mongodb.net/moments
     ports:
       - 27017:27017
     volumes:
@@ -29,6 +40,8 @@ services:
 volumes:
   mongodata:
     driver: local
+  static:
+  frontend:
 
 
 

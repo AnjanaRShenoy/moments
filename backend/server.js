@@ -11,11 +11,12 @@ import adminRoute from "./routes/adminRoutes.js"
 import cors from 'cors'
 import { Server } from "socket.io";
 import { createServer } from "http";
+import mongoose from "mongoose";
 
 // import fileUpload from "express-fileupload";
 // import morgan from "morgan";
 
-
+// const conn= mongoose.connect("mongodb+srv://shenoyanjana96:moments@moments.o0rfqoi.mongodb.net/moments")
 connectDB()
 const app = express()
 const httpServer = createServer(app)

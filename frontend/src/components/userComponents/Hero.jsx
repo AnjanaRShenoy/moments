@@ -6,30 +6,16 @@ import {
   Flex,
   Button,
   Text,
-<<<<<<< HEAD
-  Icon,
-  Card,
-  CardHeader,
-  CardBody,
-  Avatar,
-  Heading,
-  IconButton,
-  CardFooter,
-=======
   Card,
   CardHeader,
   CardBody,
   Heading,
   IconButton,
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-<<<<<<< HEAD
-=======
   Link,
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 } from "@chakra-ui/react";
 import {
   MDBBtn,
@@ -43,12 +29,6 @@ import {
 } from "mdb-react-ui-kit";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
-<<<<<<< HEAD
-import { FaRegBookmark } from "react-icons/fa";
-import { IoIosHeartEmpty } from "react-icons/io";
-import { TbDotsCircleHorizontal } from "react-icons/tb";
-=======
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 import { HiDotsVertical } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,14 +39,6 @@ import {
   useReportPostMutation,
   useSavePostMutation,
   useCommentMutation,
-<<<<<<< HEAD
-} from "../../slices/userApiSlice";
-import { toast } from "react-toastify";
-
-const Hero = () => {
-  const { userInfo } = useSelector((state) => state.auth);
-  const { data: posts, error, refetch } = useListPostQuery();
-=======
   useFollowMutation,
   useReportCommentMutation,
   useEditCommentMutation,
@@ -90,28 +62,10 @@ const Hero = () => {
     refetch,
   } = useListPostQuery({ _id: userInfo._id });
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   const [postComment] = useCommentMutation();
   const [savePosts] = useSavePostMutation();
   const [like] = useLikePostMutation();
   const [report] = useReportPostMutation();
-<<<<<<< HEAD
-  const [data, setData] = useState([]);
-  const [comment, setComment] = useState(" ");
-  const [save, setSave] = useState(" ");
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await refetch();
-  //       setData(posts);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [refetch, data]);
-=======
 
   const [reportComment] = useReportCommentMutation();
   const [data, setData] = useState([]);
@@ -135,6 +89,7 @@ const Hero = () => {
       setOtherPosts(posts.otherPosts);
       setCommentData(posts.comments);
       setUser(posts.userData);
+      console.log(posts);
     }
   }, [posts]);
 
@@ -143,16 +98,10 @@ const Hero = () => {
   useEffect(() => {
     refetch();
   }, [refetch, data]);
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
   const submitComment = async (postId, userid) => {
     try {
       if (comment.trim()) {
-<<<<<<< HEAD
-        const res = await postComment({ comment, userInfo, postId }).unwrap();
-        setComment(" ");
-        refetch()
-=======
         const res = await postComment({
           comment,
           userInfo,
@@ -161,7 +110,6 @@ const Hero = () => {
         }).unwrap();
         setComment("");
         refetch();
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       }
     } catch (err) {
       console.log(err);
@@ -171,27 +119,16 @@ const Hero = () => {
   const savePost = async (postId) => {
     try {
       const res = await savePosts({ userInfo, postId }).unwrap();
-<<<<<<< HEAD
-      refetch()
-=======
       refetch();
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
     } catch (err) {
       console.log(err);
     }
   };
 
-<<<<<<< HEAD
-  const likePost = async (postId) => {
-    try {
-      const res = await like({ userInfo, postId }).unwrap();
-      refetch()
-=======
   const likePost = async (postId, userid) => {
     try {
       const res = await like({ userInfo, postId, userid }).unwrap();
       refetch();
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
     } catch (err) {
       console.log(err);
     }
@@ -203,23 +140,15 @@ const Hero = () => {
 
   const reportHandler = async (postId) => {
     try {
-<<<<<<< HEAD
-
-      const res = await report({ userInfo, postId }).unwrap();
-      refetch()
-=======
   
 
       const res = await report({ userInfo, postId }).unwrap();
       refetch();
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       toast.success("Reported successfully");
     } catch (err) {
       console.log(err);
     }
   };
-<<<<<<< HEAD
-=======
 
   // const [editComment] = useEditCommentMutation();
   // const commentEditHandler = async (commentId) => {
@@ -316,7 +245,6 @@ const Hero = () => {
     console.log(postId);
   };
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   return (
     <div
       style={{
@@ -328,13 +256,8 @@ const Hero = () => {
         width: "600px",
       }}
     >
-<<<<<<< HEAD
-      {posts ? (
-        posts.map((posts) => (
-=======
       {post ? (
         post.map((posts) => (
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
           <Card
             key={posts._id}
             w="lg"
@@ -354,11 +277,6 @@ const Hero = () => {
                     src={`../../../${posts.userId.profileImage}`}
                   />
 
-<<<<<<< HEAD
-                  <Box>
-                    <Heading size="sm">{posts.userId.name}</Heading>
-                  </Box>
-=======
                   <Link
                     _hover={{ textDecoration: "none", color: "black" }}
                     onClick={() => {
@@ -369,9 +287,9 @@ const Hero = () => {
                       <Heading size="sm">{posts.userId.name}</Heading>
                     </Box>
                   </Link>
-
+                    
                   {requested &&
-                  requested.some(
+                  requested.find(
                     (request) => request.receiver === posts.userId._id
                   ) ? (
                     <Button
@@ -404,7 +322,6 @@ const Hero = () => {
                       Follow
                     </Button>
                   )}
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                 </Flex>
                 <Menu placement="bottom-end">
                   <MenuButton
@@ -423,27 +340,16 @@ const Hero = () => {
                 </Menu>
               </Flex>
             </CardHeader>
-<<<<<<< HEAD
-
-=======
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
             <Image
               style={{ height: "400px", margin: "0 10px" }}
               objectFit="cover"
               borderRadius="10px"
               src={`../../../${posts.post}`}
               alt=""
-<<<<<<< HEAD
-            />
-
-            <CardBody>
-              {posts.bio && <Text>{posts.bio}</Text>}
-=======
               onClick={() => toggleOpen(posts._id)}
             />
             <CardBody>
               <Text>{posts.caption}</Text>
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
               <Box
                 style={{
                   display: "flex",
@@ -451,14 +357,6 @@ const Hero = () => {
                   justifyContent: "space-around",
                 }}
               >
-<<<<<<< HEAD
-                {posts.like.find((user) => user.userId === userInfo._id) ? (
-                  <i
-                    class="bi bi-emoji-heart-eyes-fill"
-                    style={{ fontSize: "1.5rem"}}
-                    onClick={() => {
-                      likePost(posts._id);
-=======
                 {posts.like &&
                 posts.like.find((user) => user.userId === userInfo._id) ? (
                   <i
@@ -466,7 +364,6 @@ const Hero = () => {
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
                       likePost(posts._id, posts.userId._id);
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                     }}
                   ></i>
                 ) : (
@@ -474,33 +371,6 @@ const Hero = () => {
                     class="bi bi-heart"
                     style={{ fontSize: "1.5rem" }}
                     onClick={() => {
-<<<<<<< HEAD
-                      likePost(posts._id);
-                    }}
-                  ></i>
-                )}
-
-                <i class="bi bi-chat" style={{ fontSize: "1.5rem" }}></i>
-                <i
-                  class="bi bi-bookmark"
-                  style={{ fontSize: "1.5rem" }}
-                  onClick={() => {
-                    savePost(posts._id);
-                  }}
-                ></i>
-              </Box>
-            </CardBody>
-
-            {/* <CardFooter
-              justify="space-between"
-              flexWrap="wrap"
-              sx={{
-                "& > button": {
-                  minW: "136px",
-                },
-              }}
-            ></CardFooter> */}
-=======
                       likePost(posts._id, posts.userId._id);
                     }}
                   ></i>
@@ -535,7 +405,6 @@ const Hero = () => {
               </Box>
             </CardBody>
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
             <Flex>
               <Input
                 id="comment"
@@ -547,10 +416,7 @@ const Hero = () => {
                 placeholder="Enter your comment"
                 width="80%"
                 marginLeft="15px"
-<<<<<<< HEAD
-=======
                 value={comment}
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                 onChange={(e) => setComment(e.target.value)}
               />
               <Button
@@ -558,21 +424,12 @@ const Hero = () => {
                 colorScheme="blue"
                 ml={2}
                 onClick={() => {
-<<<<<<< HEAD
-                  submitComment(posts._id);
-=======
                   submitComment(posts._id, posts.userId._id);
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                 }}
               >
                 Post
               </Button>
             </Flex>
-<<<<<<< HEAD
-            <Text style={{ marginTop: "10px", marginBottom: "3px" }}>
-              {comment.text}
-            </Text>
-=======
             <Text style={{ marginTop: "10px", marginBottom: "15px" }}>
               {comment.text}
             </Text>
@@ -648,7 +505,6 @@ const Hero = () => {
                   ))}
               </div>
             ) : null}
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
           </Card>
         ))
       ) : (

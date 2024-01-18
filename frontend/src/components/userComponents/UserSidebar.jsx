@@ -36,19 +36,6 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useSocket } from "../../context/Context.jsx";
 
-<<<<<<< HEAD
-const LinkItems = [
-  { name: "Home", icon: FiHome, url: "/" },
-  { name: "Profile", icon: CgProfile, url: "/profile" },
-  { name: "Create", icon: MdOutlineLibraryAdd, url: "/create" },
-  { name: "Saved post", icon: IoIosSave, url:"/savedPost" },
-  { name: "Followers", icon: GiShadowFollower },
-  { name: "Followings", icon: GiShadowFollower },
-  { name: "Messages", icon: TiMessages },
-  { name: "Notifications", icon: IoIosNotificationsOutline },
-  { name: "Settings", icon: FiSettings },
-];
-=======
 
 
 const SidebarContent = ({ onClose, ...rest }) => {
@@ -270,7 +257,6 @@ const MobileNav = ({ onOpen, ...rest }) => {
     </Flex>
   );
 };
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
 export default function UserSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -304,126 +290,5 @@ const LinkItems = [
   { name: "Profile", icon: CgProfile, url: "/fullProfile" },
   { name: "Saved post", icon: IoIosSave, url: "/savedPost" },
 
-<<<<<<< HEAD
-const SidebarContent = ({ onClose, ...rest }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [logoutApiCall] = useLogoutMutation();
-  const logoutHandler = async () => {
-    try {
-      await logoutApiCall().unwrap();
-      dispatch(logout());
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  return (
-    <Box
-      bg={useColorModeValue("white", "gray.900")}
-      borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", md: 60 }}
-      pos="fixed"
-      h="full"
-      {...rest}
-    >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <img
-          src="../../../images/Logo.png"
-          alt=""
-          style={{ backgroundColor: "black", height: "70px" }}
-        />
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
-      </Flex>
-      {LinkItems.map((link) => (
-        <NavItem
-          key={link.name}
-          
-          icon={link.icon}
-        >
-          <Link as={Link} to={link.url}>
-            {link.name}
-          </Link>
-        </NavItem>
-      ))}
-      <Box>
-        <NavItem icon={RiLogoutCircleRLine} onClick={logoutHandler}>
-          <Link as={Link} to="/logout">
-            Logout
-          </Link>
-        </NavItem>
-      </Box>
-    </Box>
-  );
-};
-
-const NavItem = ({ icon, children, ...rest }) => {
-  return (
-    <Box
-      as="a"
-      href="#"
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: "cyan.400",
-          color: "white",
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: "white",
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Box>
-  );
-};
-
-const MobileNav = ({ onOpen, ...rest }) => {
-  return (
-    <Flex
-      ml={{ base: 0, md: 60 }}
-      px={{ base: 4, md: 24 }}
-      height="20"
-      alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent="flex-center"
-      {...rest}
-    >
-      <IconButton
-        variant="outline"
-        onClick={onOpen}
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
-
-      <img
-        src="../../../images/Moments.png"
-        alt=""
-        style={{ height: "70px" }}
-      />
-    </Flex>
-  );
-};
-=======
  
 ];
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125

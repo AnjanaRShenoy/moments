@@ -6,15 +6,6 @@ import Chat from "../../components/userComponents/Chat.jsx";
 
 const HomeScreen = () => {
   return (
-<<<<<<< HEAD
-    
-    <div >
-      <Hero/>
-    </div>
-   
-  )
-}
-=======
     <Flex style={{ width: "100%", justifyContent: "space-between" }}>
       <div style={{ width: "250px" }}></div>
       <Flex flexDirection={{ md: "column", base: "column" }}>
@@ -29,6 +20,5 @@ const HomeScreen = () => {
     </Flex>
   );
 };
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
 export default HomeScreen;

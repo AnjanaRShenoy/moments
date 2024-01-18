@@ -1,4 +1,4 @@
-import { ADMIN_URL, USERS_URL } from "../constants/constants";
+import { ADMIN_URL, USERS_URL } from "../constants/constants.js";
 import { apiSlice } from "./apiSlice";
 
 export const userAdminApiSlice = apiSlice.injectEndpoints({
@@ -70,29 +70,17 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
 
     // to get the user details from backend
     profile: builder.query({
-<<<<<<< HEAD
-      query: ({_id}) => ({
-        url: `${USERS_URL}/profile?_id=${_id}`,
-        method: "GET",
-        
-=======
       query: ({ _id }) => ({
         url: `${USERS_URL}/profile?_id=${_id}`,
         method: "GET",
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       })
     }),
 
 
     updateUser: builder.mutation({
       query: (data) => ({
-<<<<<<< HEAD
-        url: `${USERS_URL}/updateProfile`,
-        method: "PUT",
-=======
         url: `/api/users/updateProfile`,
         method: "POST",
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
         body: data,
       }),
     }),
@@ -115,14 +103,6 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-<<<<<<< HEAD
-    // to retrieve the saved post from database
-    getSavedPost: builder.query({
-      query:({_id})=>({
-        url:`${USERS_URL}/savedPost?_id=${_id}`,
-        method:"GET",
-        
-=======
     likePost: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/likePost`,
@@ -314,7 +294,6 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/deleteNotification`,
         method: "POST",
         body: data
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
       })
     }),
 
@@ -352,12 +331,6 @@ export const {
   useProfileQuery,
   useUpdateUserMutation,
   useUpdateProfileImageMutation,
-<<<<<<< HEAD
-  useSavePostMutation,
-  useGetSavedPostQuery,
-  useLikePostMutation,
-  useReportPostMutation
-=======
   useLikePostMutation,
   useReportPostMutation,
   useReportCommentMutation,
@@ -383,5 +356,4 @@ export const {
   useChatMutation,
   useDeleteNotificationMutation,
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 } = userAdminApiSlice;

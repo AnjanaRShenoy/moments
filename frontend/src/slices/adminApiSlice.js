@@ -1,4 +1,4 @@
-import { ADMIN_URL, USERS_URL } from "../constants/constants";
+import { ADMIN_URL, USERS_URL } from "../constants/constants.js";
 import { apiSlice } from "./apiSlice";
 export const userAdminApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({       
@@ -11,11 +11,7 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         }),
 
         listUsers: builder.query({
-<<<<<<< HEAD
-            query: (data) => ({
-=======
             query: () => ({
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
                 url: `${ADMIN_URL}/listUsers`,
                 method: "GET",
                 
@@ -39,17 +35,7 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-<<<<<<< HEAD
-        blockUser: builder.mutation({
-            query: (data) => ({
-                url: `${ADMIN_URL}/blockUser`,
-                method: "POST",
-                body: data,
-            }),
-        }),
-=======
        
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 
       
        
@@ -69,15 +55,6 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-<<<<<<< HEAD
-        getPost:builder.query({
-            query:(data)=>({
-                url:`${ADMIN_URL}/getPost`,
-                method:"GET",
-                body:data
-            })
-        })
-=======
         blockUser: builder.mutation({
             query:(data)=>({
                 url:`${ADMIN_URL}/blockUser`,
@@ -87,7 +64,6 @@ export const userAdminApiSlice = apiSlice.injectEndpoints({
         }),
 
         
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
     })
 })
 export const {
@@ -96,15 +72,11 @@ export const {
   useAdminLogoutMutation,
   useListUsersQuery,
   useSearchUsersMutation,
-  useBlockUserMutation,
+  useDeleteUserMutation,
   useEditUserMutation,
   useGetUserMutation,
   usePostDeleteMutation,
-<<<<<<< HEAD
-  useGetPostQuery,
-=======
   useBlockUserMutation,
   useGetPostQuery,
 
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
 } = userAdminApiSlice;

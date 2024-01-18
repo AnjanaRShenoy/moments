@@ -33,19 +33,6 @@ const userSchema = mongoose.Schema(
       type: String,
       required:true,
       default:" "
-<<<<<<< HEAD
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-      required: true
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-      required: true
-    },
-=======
     },
     isActive: {
       type: Boolean,
@@ -58,7 +45,6 @@ const userSchema = mongoose.Schema(
       required: true
     },
     savedPost:[]
->>>>>>> 2d77eba291877a20fe0877d73a93a06c2f0fc125
   },
   {
     timestamps: true,
