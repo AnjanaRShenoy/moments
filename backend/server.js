@@ -11,6 +11,7 @@ import adminRoute from "./routes/adminRoutes.js"
 import cors from 'cors'
 import { Server } from "socket.io";
 import { createServer } from "http";
+import path from "path";
 
 connectDB()
 const app = express()
@@ -45,11 +46,11 @@ io.on("connection", (socket) => {
         socket.join(room)
         console.log("User joined Room: " + room)
     })
-   
+
     socket.on("join notification", (userid) => {
         socket.join(userid)
         console.log("User joined notification: " + userid)
-    })    
+    })
 
     socket.off("setup", () => {
         console.log("User Disconnected");
@@ -78,6 +79,19 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use('/api/users', router)
 app.use('/api/admin', adminRoute)
+
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(
+    "/Posts",
+    express.static(path.join(__dirname, "public/Posts"))
+);
+app.get("*", (req, res) =>
+    res.sendFile(
+        path.resolve(__dirname, "..", "frontend", "dist", "index.html")
+    )
+);
+
 
 app.get('/', (req, res) =>
     res.send('server is ready')

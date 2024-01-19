@@ -51,7 +51,7 @@ import { toast } from "react-toastify";
 import io from "socket.io-client";
 
 import { useNavigate } from "react-router-dom";
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = "https://www.livemoments.online/";
 var socket, selectedChatCompare;
 
 const Hero = () => {

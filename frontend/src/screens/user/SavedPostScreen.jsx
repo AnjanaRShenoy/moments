@@ -36,7 +36,8 @@ debugger
         <Image
         height="280px"
           objectFit="cover"
-          src={`../../../public/${savedPost.postId.post}`}
+          
+          src={`Posts/${savedPost.postId.post}`}
           alt="Chakra UI"
         />
       </Card>))):(<></>)}

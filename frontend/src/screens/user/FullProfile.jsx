@@ -264,7 +264,7 @@ const FullProfile = () => {
                     <div>
                       <MDBCardText className="mb-1 h5">{postCount}</MDBCardText>
                       <MDBCardText className="small text-muted mb-0">
-                        Photos
+                        Phieieieie
                       </MDBCardText>
                     </div>
                     <div
@@ -316,7 +316,7 @@ const FullProfile = () => {
                     {post.length > 0 ? (
                       post.map((post) => (
                         <MDBCardImage
-                          src={`../../../${post.post}`}
+                          src={`Posts/${post.post}`}
                           alt="image 1"
                           // className="w-100 rounded-3"
                           onClick={() => toggleOpen(post._id)}

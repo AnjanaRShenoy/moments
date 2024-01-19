@@ -10,7 +10,6 @@ import Request from "../models/RequestModel.js";
 // to save the created post in database
 const createPost = asyncHandler(async (req, res) => {
     try {
-
         const userInfo = JSON.parse(req.body.userInfo)
         const userId = userInfo._id;
 
