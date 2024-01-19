@@ -5,16 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server:{
-     // This is the port which we will use in docker
-     host: true,
-
-		watch: {
-			usePolling: true
-		},
     port:3000,
     proxy:{
       '/api':{
-        target:'http://localhost:5000',
+        target:'http://www.livemoments.online:5000',
         changeOrigin:true,
       },
     },
