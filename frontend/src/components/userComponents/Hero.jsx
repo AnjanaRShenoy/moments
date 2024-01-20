@@ -274,7 +274,7 @@ const Hero = () => {
                       marginRight: "10px",
                     }}
                     name={posts.userId.name}
-                    src={`../../../${posts.userId.profileImage}`}
+                    src={`Posts/${posts.userId.profileImage}`}
                   />
 
                   <Link
@@ -344,7 +344,7 @@ const Hero = () => {
               style={{ height: "400px", margin: "0 10px" }}
               objectFit="cover"
               borderRadius="10px"
-              src={`../../../${posts.post}`}
+              src={`Posts/${posts.post}`}
               alt=""
               onClick={() => toggleOpen(posts._id)}
             />
@@ -536,7 +536,7 @@ const Hero = () => {
                       marginRight: "10px",
                     }}
                     name={posts.userId.name}
-                    src={`../../../${posts.userId.profileImage}`}
+                    src={`Posts/${posts.userId.profileImage}`}
                   />
 
                   <Link
@@ -603,7 +603,7 @@ const Hero = () => {
               style={{ height: "400px", margin: "0 10px" }}
               objectFit="cover"
               borderRadius="10px"
-              src={`../../../${posts.post}`}
+              src={`Posts/${posts.post}`}
               alt=""
               onClick={() => toggleOpen(posts._id)}
             />
@@ -795,7 +795,7 @@ const Hero = () => {
                       style={{ height: "400px", width: "100%", margin: "0" }}
                       objectFit="cover"
                       borderRadius="10px"
-                      src={`../../../${filteredPost.post}`}
+                      src={`Posts/${filteredPost.post}`}
                     />
                     <Flex marginTop="15px" marginBottom="15px">
                       <Input
