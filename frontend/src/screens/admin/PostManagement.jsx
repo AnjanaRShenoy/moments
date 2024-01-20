@@ -97,7 +97,7 @@ const PostManagement = () => {
               style={{ height: "400px", margin: "0 10px" }}
               objectFit="cover"
               borderRadius="10px"
-              src={`../../../${posts.post}`}
+              src={`Posts/${posts.post}`}
               alt=""
             />
             <CardFooter></CardFooter>

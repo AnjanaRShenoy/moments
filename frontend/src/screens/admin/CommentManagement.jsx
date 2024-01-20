@@ -78,7 +78,7 @@ const CommentManagement = () => {
               style={{ height: "400px", margin: "0 10px" }}
               objectFit="cover"
               borderRadius="10px"
-              src={`../../../${posts.postData.post}`}
+              src={`Posts/${posts.postData.post}`}
               alt=""
             />
 
