@@ -20,6 +20,7 @@ const io = new Server(httpServer, {
     pingTimeout: 60000,
     cors: {
         origin: process.env.SOCKETF,
+        credentials: true,
     }
 })
 app.set('io', io)
