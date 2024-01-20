@@ -12,9 +12,11 @@ import cors from 'cors'
 import { Server } from "socket.io";
 import { createServer } from "http";
 import path from "path";
+import morgan from "morgan";
 
 connectDB()
 const app = express()
+app.use(morgan('dev'))
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
     pingTimeout: 60000,
@@ -73,7 +75,7 @@ io.on("connection", (socket) => {
     });
 })
 
-// app.use(morgan('dev'))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
