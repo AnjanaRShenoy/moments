@@ -50,6 +50,7 @@ const LoginScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    debugger
     try {
       if (email.trim() || password.trim()) {
         const res = await login({ email, password }).unwrap();

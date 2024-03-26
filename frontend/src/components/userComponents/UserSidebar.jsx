@@ -97,6 +97,7 @@ useEffect(()=>{
 
   const [logoutApiCall] = useLogoutMutation();
   const logoutHandler = async () => {
+    debugger
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
